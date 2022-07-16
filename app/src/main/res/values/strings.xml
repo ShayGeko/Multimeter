@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Multimeter</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="createAccount">Create Account</string>
+    <string name="or">OR</string>
+    <string name="log_out">log out</string>
 </resources>
