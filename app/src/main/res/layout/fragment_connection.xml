@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".connection.ConnectionFragment">
+
+    <TextView
+        android:id="@+id/connection_text"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:text="@string/connection_placeholder" />
+
+    <Button
+        android:id="@+id/connection_btn"
+        android:text="@string/connection_button"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="75dp" />
+
+</LinearLayout>
