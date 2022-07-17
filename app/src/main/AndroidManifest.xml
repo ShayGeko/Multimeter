@@ -14,15 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Multimeter"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".login.LoginActivity"
@@ -30,6 +25,17 @@
         <activity
             android:name=".createAccount.CreateAccountActivity"
             android:exported="false"/>
-    </application>
 
+        <activity android:name="com.untitled.multimeter.MainMenu"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.untitled.multimeter.experiments.ExperimentEntry"
+            android:exported="true"/>
+    </application>
 </manifest>
