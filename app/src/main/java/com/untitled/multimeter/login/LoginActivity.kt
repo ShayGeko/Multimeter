@@ -1,5 +1,6 @@
 package com.untitled.multimeter.login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.createAccount.CreateAccountActivity
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
 
@@ -45,11 +47,11 @@ class LoginActivity : AppCompatActivity() {
      * or displays the error in a Toast otherwise
      */
     private fun login(){
-        val username = emailEditText.text.toString()
+        val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
 
         // simple input validation
-        if(username.isEmpty() || password.isEmpty()){
+        if(email.isEmpty() || password.isEmpty()){
             showErrorMessage("Please enter both login and password!");
         }
 
@@ -58,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.isEnabled = false
 
         // send login request, await response
-        viewModel.login(username, password).observe(this) {
+        viewModel.login(email, password).observe(this) {
 
             // once request is received, enable the login button
             loginBtn.isEnabled = true
@@ -84,8 +86,11 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Opens the "createAccount" activity
+     */
     private fun registerUser(){
-
+        startActivity(Intent(application, CreateAccountActivity::class.java))
     }
     /**
      * Displays a toast with the specified error message

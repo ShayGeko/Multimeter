@@ -10,29 +10,37 @@ import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.data.model.UserInfo
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
+import io.realm.kotlin.mongodb.exceptions.UserAlreadyExistsException
+import io.realm.kotlin.types.ObjectId
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
+    private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
-    private lateinit var registerBtn : Button
+    private lateinit var confirmPasswordEditText: EditText
+    private lateinit var createAccountBtn : Button
     private lateinit var viewModel: CreateAccountViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_create_account)
 
+        // get the viewmodel
         val viewModelFactory = UserViewModelFactory(application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(CreateAccountViewModel::class.java)
 
         // get the views
         emailEditText = findViewById(R.id.email_edittext)
+        usernameEditText = findViewById(R.id.username_edittext)
         passwordEditText = findViewById(R.id.password_edittext)
-        registerBtn = findViewById(R.id.register_btn)
+        confirmPasswordEditText = findViewById(R.id.confirm_password_edittext)
+        createAccountBtn = findViewById(R.id.create_account_btn)
 
         // add listeners
-        registerBtn.setOnClickListener { registerUser() }
+        createAccountBtn.setOnClickListener { registerUser() }
     }
 
     /**
@@ -42,26 +50,49 @@ class CreateAccountActivity : AppCompatActivity() {
      * or displays the error in a Toast otherwise
      */
     private fun registerUser(){
-        val username = emailEditText.text.toString()
+        val email = emailEditText.text.toString()
+        val username = usernameEditText.text.toString()
         val password = passwordEditText.text.toString()
+        val confirmPassword = confirmPasswordEditText.text.toString()
+
+        // make sure all the fields are filled
+        if(email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
+            showErrorMessage("Please fill out every field")
+            return
+        }
+
+        // make sure the passwords match
+        if(password != confirmPassword){
+            showErrorMessage("Passwords do not match!")
+            return
+        }
+
 
         // disable the login button while waiting response from server,
         // so that the user cannot send several login requests
 
-        // send login request, await response
-        viewModel.registerUser(username, password).observe(this) {
-
-            // once request is received, enable the login button
+        // send register request, await response
+        viewModel.registerUser(email, password).observe(this) {
 
             // if result is successful, return to the main activity
             it.onSuccess {
+                // TODO: add custom user data
+//                val userInfo = UserInfo().apply {
+//                    this.id = ObjectId.Companion.from(it.identity)
+//                    this.email = email
+//                    this.userName = username
+//                }
+//
+//
+//                viewModel.addUserData(userInfo);
+                Toast.makeText(this, "Registered successfully!", Toast.LENGTH_LONG).show()
                 finish()
             }
             // otherwise, display error to the user
             it.onFailure { ex : Throwable ->
                 when(ex){
-                    is InvalidCredentialsException -> {
-                        showErrorMessage("Invalid username or password")
+                    is UserAlreadyExistsException -> {
+                        showErrorMessage("User with the specified email already exists")
                     }
                     is ConnectionException -> {showErrorMessage("Could not connect to the server. Please check your internet connection")}
                     else -> {
