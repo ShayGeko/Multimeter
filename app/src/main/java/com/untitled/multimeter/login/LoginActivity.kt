@@ -48,6 +48,11 @@ class LoginActivity : AppCompatActivity() {
         val username = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
 
+        // simple input validation
+        if(username.isEmpty() || password.isEmpty()){
+            showErrorMessage("Please enter both login and password!");
+        }
+
         // disable the login button while waiting response from server,
         // so that the user cannot send several login requests
         loginBtn.isEnabled = false
