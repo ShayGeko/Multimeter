@@ -38,29 +38,19 @@ class LoginActivity : AppCompatActivity() {
         // add listeners
         loginBtn.setOnClickListener { login() }
         registerBtn.setOnClickListener { registerUser() }
+
+        // observe login result
+        // has to be added here, and not directly after asking sending login request
+        // so that the observer can still fetch the data after screen rotations
+        addLoginResultObserver()
     }
 
     /**
-     * Attempts to login the user
-     * with username and password acquired from editTexts
-     * opens mainActivity if login was successful,
-     * or displays the error in a Toast otherwise
+     * Observe the result of login, process the response when acquired
      */
-    private fun login(){
-        val email = emailEditText.text.toString()
-        val password = passwordEditText.text.toString()
-
-        // simple input validation
-        if(email.isEmpty() || password.isEmpty()){
-            showErrorMessage("Please enter both login and password!");
-        }
-
-        // disable the login button while waiting response from server,
-        // so that the user cannot send several login requests
-        loginBtn.isEnabled = false
-
-        // send login request, await response
-        viewModel.login(email, password).observe(this) {
+    private fun addLoginResultObserver(){
+        viewModel.loginResult.observe(this) {
+            Log.d(APPLICATION_TAG, "response from login acquired")
 
             // once request is received, enable the login button
             loginBtn.isEnabled = true
@@ -82,6 +72,29 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    /**
+     * Attempts to login the user
+     * with username and password acquired from editTexts
+     * opens mainActivity if login was successful,
+     * or displays the error in a Toast otherwise
+     */
+    private fun login(){
+        val email = emailEditText.text.toString()
+        val password = passwordEditText.text.toString()
+
+        // simple input validation
+        if(email.isEmpty() || password.isEmpty()){
+            showErrorMessage("Please enter both login and password!")
+            return
+        }
+
+        // disable the login button while waiting response from server,
+        // so that the user cannot send several login requests
+        loginBtn.isEnabled = false
+
+        // send login request, await response
+        viewModel.login(email, password)
 
 
     }

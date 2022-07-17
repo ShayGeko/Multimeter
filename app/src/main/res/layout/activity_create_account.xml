@@ -6,11 +6,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="50dp">
+        android:layout_marginHorizontal="30dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="@string/email"/>
         <EditText
             android:id="@+id/email_edittext"

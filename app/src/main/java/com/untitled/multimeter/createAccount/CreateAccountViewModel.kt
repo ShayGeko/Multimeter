@@ -1,6 +1,7 @@
 package com.untitled.multimeter.createAccount
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.UserRepository
@@ -8,6 +9,7 @@ import io.realm.kotlin.mongodb.User
 
 class CreateAccountViewModel(private val repository: UserRepository) : ViewModel() {
 
+    var registerResult = MutableLiveData<Result<Unit>> ()
     /**
      * Attempts to register the user with the specified email and password
      *
@@ -19,7 +21,8 @@ class CreateAccountViewModel(private val repository: UserRepository) : ViewModel
      * and error wrapped in Result otherwise
      */
     fun registerUser(email: String, password: String) : LiveData<Result<Unit>> {
-        return repository.register(email, password)
+        registerResult = repository.register(email, password) as MutableLiveData<Result<Unit>>
+        return registerResult
     }
     /**
      * Attempts to login the user with the specified email and password

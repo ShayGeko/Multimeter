@@ -41,38 +41,21 @@ class CreateAccountActivity : AppCompatActivity() {
 
         // add listeners
         createAccountBtn.setOnClickListener { registerUser() }
+
+        // observe register result
+        // has to be added here, and not directly after asking sending register request
+        // so that the observer can still fetch the data after screen rotations
+        addRegisterResultObserver()
     }
 
     /**
-     * Attempts to login the user
-     * with username and password acquired from editTexts
-     * opens mainActivity if login was successful,
-     * or displays the error in a Toast otherwise
+     * Observe the result of register, process the response when acquired
      */
-    private fun registerUser(){
-        val email = emailEditText.text.toString()
-        val username = usernameEditText.text.toString()
-        val password = passwordEditText.text.toString()
-        val confirmPassword = confirmPasswordEditText.text.toString()
+    private fun addRegisterResultObserver(){
+        viewModel.registerResult.observe(this) {
 
-        // make sure all the fields are filled
-        if(email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
-            showErrorMessage("Please fill out every field")
-            return
-        }
-
-        // make sure the passwords match
-        if(password != confirmPassword){
-            showErrorMessage("Passwords do not match!")
-            return
-        }
-
-
-        // disable the login button while waiting response from server,
-        // so that the user cannot send several login requests
-
-        // send register request, await response
-        viewModel.registerUser(email, password).observe(this) {
+            // re-enable the button upon response
+            createAccountBtn.isEnabled = true
 
             // if result is successful, return to the main activity
             it.onSuccess {
@@ -101,6 +84,47 @@ class CreateAccountActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    /**
+     * Attempts to login the user
+     * with username and password acquired from editTexts
+     * opens mainActivity if login was successful,
+     * or displays the error in a Toast otherwise
+     */
+    private fun registerUser(){
+        val email = emailEditText.text.toString()
+        val username = usernameEditText.text.toString()
+        val password = passwordEditText.text.toString()
+        val confirmPassword = confirmPasswordEditText.text.toString()
+
+        // make sure all the fields are filled
+        if(email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
+            showErrorMessage("Please fill out every field")
+            return
+        }
+
+        // password rules enforced by MongoDB auth
+        // password must be between 6 and 127 characters long
+        if(password.length < 6){
+            showErrorMessage("Password must be at least 6 characters long")
+        }
+        else if(password.length > 128){
+            showErrorMessage("Password is too long")
+        }
+
+        // make sure the passwords match
+        if(password != confirmPassword){
+            showErrorMessage("Passwords do not match!")
+            return
+        }
+
+
+        // disable the createAccount button while waiting response from server,
+        // so that the user cannot send several register requests
+        createAccountBtn.isEnabled = false;
+
+        // send register request, await response
+        viewModel.registerUser(email, password)
 
 
     }

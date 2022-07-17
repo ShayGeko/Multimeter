@@ -9,7 +9,6 @@ import android.widget.Toast
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.login.LoginActivity
-import io.realm.kotlin.internal.platform.isFrozen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,9 +43,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
         else {
-
             Log.d(APPLICATION_TAG, user.toString())
-
             Toast.makeText(this, "Welcome, ${user.identity}", Toast.LENGTH_LONG).show()
         }
     }
