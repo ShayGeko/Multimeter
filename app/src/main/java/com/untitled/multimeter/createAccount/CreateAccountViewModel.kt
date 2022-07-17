@@ -9,7 +9,6 @@ import io.realm.kotlin.mongodb.User
 
 class CreateAccountViewModel(private val repository: UserRepository) : ViewModel() {
 
-    var registerResult = MutableLiveData<Result<Unit>> ()
     /**
      * Attempts to register the user with the specified email and password
      *
@@ -21,8 +20,7 @@ class CreateAccountViewModel(private val repository: UserRepository) : ViewModel
      * and error wrapped in Result otherwise
      */
     fun registerUser(email: String, password: String) : LiveData<Result<Unit>> {
-        registerResult = repository.register(email, password) as MutableLiveData<Result<Unit>>
-        return registerResult
+        return repository.register(email, password) as MutableLiveData<Result<Unit>>
     }
     /**
      * Attempts to login the user with the specified email and password

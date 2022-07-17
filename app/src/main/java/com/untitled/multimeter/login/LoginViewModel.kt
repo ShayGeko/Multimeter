@@ -8,7 +8,6 @@ import io.realm.kotlin.mongodb.User
 
 class LoginViewModel(private val repository: UserRepository) : ViewModel() {
 
-    var loginResult = MutableLiveData<Result<User>>()
     /**
      * Attempts to login the user with the specified username and password
      *
@@ -20,8 +19,7 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
      * and error wrapped in Result otherwise
      */
     fun login(username: String, password: String) : LiveData<Result<User>> {
-        loginResult = repository.login(username, password) as MutableLiveData<Result<User>>
-        return loginResult
+        return repository.login(username, password) as MutableLiveData<Result<User>>
     }
 
 }
