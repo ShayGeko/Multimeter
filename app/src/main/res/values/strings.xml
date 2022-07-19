@@ -11,4 +11,5 @@
     <string name="password_mandatory_field">Password*</string>
     <string name="confirm_password_mandatory_field">Confirm password*</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="add_experiment">Add experiment</string>
 </resources>

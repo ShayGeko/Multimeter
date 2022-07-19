@@ -36,15 +36,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        // get the application user
-        val user = realmApp.currentUser
-        // if no user, or if login expired, prompt login
-        if(user == null || !user.loggedIn){
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
-        else {
-            Log.d(APPLICATION_TAG, user.toString())
-            Toast.makeText(this, "Welcome, ${user.identity}", Toast.LENGTH_LONG).show()
-        }
+
     }
 }

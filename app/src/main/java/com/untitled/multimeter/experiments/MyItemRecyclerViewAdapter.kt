@@ -15,7 +15,7 @@ import java.util.*
 
 /**
  * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
+ * TODO: Replace the implementation with code for the data type.
  */
 class MyItemRecyclerViewAdapter(
     private var list: List<MyData> = emptyList<MyData>()
