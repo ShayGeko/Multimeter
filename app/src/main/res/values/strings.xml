@@ -20,4 +20,5 @@
     <string name="add_experiment">Add experiment</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="measure_button">Take Measurement</string>
 </resources>
