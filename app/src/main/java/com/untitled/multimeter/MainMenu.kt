@@ -18,7 +18,7 @@ class MainMenu : AppCompatActivity() {
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)
 
         //Add fragments to viewpager2
-        val fragmentList = listOf(Experiments(), Empty(), Empty())
+        val fragmentList = listOf(Experiments(),Measure(), Empty())
         val viewPagerAdapter =
             ViewPagerAdapter(fragmentList, this.supportFragmentManager, lifecycle)
         viewPager2.adapter = viewPagerAdapter
