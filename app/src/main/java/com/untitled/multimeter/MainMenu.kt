@@ -1,18 +1,33 @@
 package com.untitled.multimeter
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.untitled.multimeter.empty.Empty
 import com.untitled.multimeter.experiments.Experiments
+import com.untitled.multimeter.login.LoginActivity
 
 class MainMenu : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_menu)
 
+        // get the application user
+        val user = MultimeterApp.realmApp.currentUser
+        // if no user, or if login expired, prompt login
+        if(user == null || !user.loggedIn){
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish();
+        }
+        else {
+            Log.d(MultimeterApp.APPLICATION_TAG, user.toString())
+            Toast.makeText(this, "Welcome, ${user.identity}", Toast.LENGTH_LONG).show()
+        }
         //Get xml views
         val tabLayout = findViewById<TabLayout>(R.id.main_menu_tablayout)
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)

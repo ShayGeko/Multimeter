@@ -4,6 +4,7 @@
     package="com.untitled.multimeter">
 
     <application
+        android:name=".MultimeterApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,6 +15,17 @@
         android:theme="@style/Theme.Multimeter"
         tools:targetApi="31">
 
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".login.LoginActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".createAccount.CreateAccountActivity"
+            android:exported="false"/>
+
         <activity android:name="com.untitled.multimeter.MainMenu"
             android:exported="true">
             <intent-filter>
@@ -22,11 +34,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.untitled.multimeter.experiments.ExperimentEntry"
-            android:exported="true">
-        </activity>
-
+        <activity
+            android:name="com.untitled.multimeter.experiments.ExperimentEntry"
+            android:exported="true"/>
     </application>
-
-
 </manifest>
