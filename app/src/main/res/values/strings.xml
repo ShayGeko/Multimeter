@@ -2,6 +2,8 @@
     <string name="app_name">Multimeter</string>
 
     <!--Connection Fragment-->
-    <string name="connection_placeholder">You are not connected to a device. Please connect to a multimeter device from the internal settings on this device.</string>
-    <string name="connection_button">Connect</string>
+    <string name="connection_specifier">Connection Status:</string>
+    <string name="connection_status">Not Connected</string>
+    <string name="connection_help">You are not connected to a device. Please connect to a multimeter device from the internal settings on this device.</string>
+    <string name="connection_button">Device Settings</string>
 </resources>

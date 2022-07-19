@@ -7,17 +7,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".connection.ConnectionFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/connection_specifier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7pt"
+            android:text="@string/connection_specifier" />
+        <TextView
+            android:id="@+id/connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textSize="7pt"
+            android:text="@string/connection_status"
+            android:textColor="#FF9494"/>
+    </LinearLayout>
+
     <TextView
-        android:id="@+id/connection_text"
+        android:id="@+id/connection_help"
         android:layout_width="wrap_content"
         android:gravity="center"
         android:layout_height="wrap_content"
-        android:text="@string/connection_placeholder" />
+        android:text="@string/connection_help" />
 
     <Button
         android:id="@+id/connection_btn"
         android:text="@string/connection_button"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
         android:layout_width="300dp"
         android:layout_height="75dp" />
