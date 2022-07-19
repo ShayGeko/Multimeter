@@ -6,4 +6,18 @@
     <string name="connection_status">Not Connected</string>
     <string name="connection_help">You are not connected to a device. Please connect to a multimeter device from the internal settings on this device.</string>
     <string name="connection_button">Device Settings</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="createAccount">Create Account</string>
+    <string name="or">OR</string>
+    <string name="log_out">log out</string>
+    <string name="email_mandatory_field">Email*</string>
+    <string name="username">Username</string>
+    <string name="password_mandatory_field">Password*</string>
+    <string name="confirm_password_mandatory_field">Confirm password*</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="add_experiment">Add experiment</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

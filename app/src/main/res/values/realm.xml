@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="realm_app_id">multimeter-app-hbbpd</string>
+    <string name="realm_app_url">https://realm.mongodb.com/groups/62d301f7dc32581dca511f38/apps/62d3023cbd4476bf01099c84</string>
+    <string name="realm_base_url">https://realm.mongodb.com</string>
+    <string name="realm_data_source_name">mongodb-atlas</string>
+</resources>

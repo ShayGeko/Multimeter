@@ -8,14 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.MyData
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
-import com.untitled.multimeter.experiments.placeholder.PlaceholderContent.PlaceholderItem
 import java.text.DateFormatSymbols
 import java.util.*
 
 
 /**
  * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
+ * TODO: Replace the implementation with code for the data type.
  */
 class MyItemRecyclerViewAdapter(
     private var list: List<MyData> = emptyList<MyData>()
