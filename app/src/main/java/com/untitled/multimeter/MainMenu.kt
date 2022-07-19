@@ -46,7 +46,7 @@ class MainMenu : AppCompatActivity() {
                 tab.text="Experiments"
             }
             if(position == 1) {
-                tab.text="Connect"
+                tab.text="Measure"
             }
             if(position == 2) {
                 tab.text="Settings"
