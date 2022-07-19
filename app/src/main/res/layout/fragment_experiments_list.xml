@@ -5,21 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <androidx.recyclerview.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/list"
-        android:name="com.untitled.multimeter.experiments.Experiments"
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/experiment_list_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context=".experiments.Experiments"
-        tools:listitem="@layout/fragment_experiments">
-
-
-    </androidx.recyclerview.widget.RecyclerView>
+        android:name="com.untitled.multimeter.experiments.ExperimentListHolderFragment"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"

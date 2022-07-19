@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.MyData
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
-import com.untitled.multimeter.experiments.placeholder.PlaceholderContent.PlaceholderItem
 import java.text.DateFormatSymbols
 import java.util.*
 
