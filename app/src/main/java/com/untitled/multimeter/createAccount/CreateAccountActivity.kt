@@ -41,50 +41,8 @@ class CreateAccountActivity : AppCompatActivity() {
 
         // add listeners
         createAccountBtn.setOnClickListener { registerUser() }
-
-        // observe register result
-        // has to be added here, and not directly after asking sending register request
-        // so that the observer can still fetch the data after screen rotations
-        addRegisterResultObserver()
     }
 
-    /**
-     * Observe the result of register, process the response when acquired
-     */
-    private fun addRegisterResultObserver(){
-        viewModel.registerResult.observe(this) {
-
-            // re-enable the button upon response
-            createAccountBtn.isEnabled = true
-
-            // if result is successful, return to the main activity
-            it.onSuccess {
-                // TODO: add custom user data
-//                val userInfo = UserInfo().apply {
-//                    this.id = ObjectId.Companion.from(it.identity)
-//                    this.email = email
-//                    this.userName = username
-//                }
-//
-//
-//                viewModel.addUserData(userInfo);
-                Toast.makeText(this, "Registered successfully!", Toast.LENGTH_LONG).show()
-                finish()
-            }
-            // otherwise, display error to the user
-            it.onFailure { ex : Throwable ->
-                when(ex){
-                    is UserAlreadyExistsException -> {
-                        showErrorMessage("User with the specified email already exists")
-                    }
-                    is ConnectionException -> {showErrorMessage("Could not connect to the server. Please check your internet connection")}
-                    else -> {
-                        Log.e(APPLICATION_TAG, "Error: $ex")
-                    }
-                }
-            }
-        }
-    }
     /**
      * Attempts to login the user
      * with username and password acquired from editTexts
@@ -124,7 +82,38 @@ class CreateAccountActivity : AppCompatActivity() {
         createAccountBtn.isEnabled = false;
 
         // send register request, await response
-        viewModel.registerUser(email, password)
+        viewModel.registerUser(email, password).observe(this) {
+
+            // re-enable the button upon response
+            createAccountBtn.isEnabled = true
+
+            // if result is successful, return to the main activity
+            it.onSuccess {
+                // TODO: add custom user data
+//                val userInfo = UserInfo().apply {
+//                    this.id = ObjectId.Companion.from(it.identity)
+//                    this.email = email
+//                    this.userName = username
+//                }
+//
+//
+//                viewModel.addUserData(userInfo);
+                Toast.makeText(this, "Registered successfully!", Toast.LENGTH_LONG).show()
+                finish()
+            }
+            // otherwise, display error to the user
+            it.onFailure { ex : Throwable ->
+                when(ex){
+                    is UserAlreadyExistsException -> {
+                        showErrorMessage("User with the specified email already exists")
+                    }
+                    is ConnectionException -> {showErrorMessage("Could not connect to the server. Please check your internet connection")}
+                    else -> {
+                        Log.e(APPLICATION_TAG, "Error: $ex")
+                    }
+                }
+            }
+        }
 
 
     }

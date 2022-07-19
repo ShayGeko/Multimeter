@@ -42,36 +42,14 @@ class LoginActivity : AppCompatActivity() {
         // observe login result
         // has to be added here, and not directly after asking sending login request
         // so that the observer can still fetch the data after screen rotations
-        addLoginResultObserver()
+        // addLoginResultObserver()
     }
 
     /**
      * Observe the result of login, process the response when acquired
      */
     private fun addLoginResultObserver(){
-        viewModel.loginResult.observe(this) {
-            Log.d(APPLICATION_TAG, "response from login acquired")
-
-            // once request is received, enable the login button
-            loginBtn.isEnabled = true
-
-            // if result is successful, return to the main activity
-            it.onSuccess {
-                finish()
-            }
-            // otherwise, display error to the user
-            it.onFailure { ex : Throwable ->
-                when(ex){
-                    is InvalidCredentialsException -> {
-                        showErrorMessage("Invalid username or password")
-                    }
-                    is ConnectionException -> {showErrorMessage("Could not connect to the server. Please check your internet connection")}
-                    else -> {
-                        Log.e(APPLICATION_TAG, "Error: $ex")
-                    }
-                }
-            }
-        }
+        viewModel.loginResult
     }
     /**
      * Attempts to login the user
@@ -94,9 +72,29 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.isEnabled = false
 
         // send login request, await response
-        viewModel.login(email, password)
+        viewModel.login(email, password).observe(this) {
+            Log.d(APPLICATION_TAG, "response from login acquired")
 
+            // once request is received, enable the login button
+            loginBtn.isEnabled = true
 
+            // if result is successful, return to the main activity
+            it.onSuccess {
+                finish()
+            }
+            // otherwise, display error to the user
+            it.onFailure { ex : Throwable ->
+                when(ex){
+                    is InvalidCredentialsException -> {
+                        showErrorMessage("Invalid username or password")
+                    }
+                    is ConnectionException -> {showErrorMessage("Could not connect to the server. Please check your internet connection")}
+                    else -> {
+                        Log.e(APPLICATION_TAG, "Error: $ex")
+                    }
+                }
+            }
+        }
     }
 
     /**
