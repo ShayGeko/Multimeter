@@ -12,6 +12,7 @@ import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.empty.Empty
 import com.untitled.multimeter.experiments.Experiments
 import com.untitled.multimeter.login.LoginActivity
+import com.untitled.multimeter.settings.SettingsFragment
 
 class MainMenu : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +35,7 @@ class MainMenu : AppCompatActivity() {
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)
 
         //Add fragments to viewpager2
-        val fragmentList = listOf(Experiments(), ConnectionFragment(), Empty())
+        val fragmentList = listOf(Experiments(), ConnectionFragment(), SettingsFragment())
         val viewPagerAdapter =
             ViewPagerAdapter(fragmentList, this.supportFragmentManager, lifecycle)
         viewPager2.adapter = viewPagerAdapter
