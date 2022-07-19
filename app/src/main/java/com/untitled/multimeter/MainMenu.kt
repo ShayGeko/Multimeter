@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.empty.Empty
 import com.untitled.multimeter.experiments.Experiments
 import com.untitled.multimeter.login.LoginActivity
@@ -34,7 +33,7 @@ class MainMenu : AppCompatActivity() {
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)
 
         //Add fragments to viewpager2
-        val fragmentList = listOf(Experiments(), ConnectionFragment(), Empty())
+        val fragmentList = listOf(Experiments(), MainFragment(), Empty())
         val viewPagerAdapter =
             ViewPagerAdapter(fragmentList, this.supportFragmentManager, lifecycle)
         viewPager2.adapter = viewPagerAdapter
@@ -45,7 +44,7 @@ class MainMenu : AppCompatActivity() {
                 tab.text="Experiments"
             }
             if(position == 1) {
-                tab.text="Connect"
+                tab.text="Measure"
             }
             if(position == 2) {
                 tab.text="Settings"
