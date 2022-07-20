@@ -28,4 +28,4 @@
 <img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png?raw=true" class="img-responsive" alt="">
 
 ### .apk file
-[download .apk](https://github.com/ShayGeko/Multimeter/releases/download/show_and_tell_1/multimeter_st1.apk)
+[download .apk](https://github.com/ShayGeko/multimeter-githubpage/releases/download/show_and_tell_1_public/show_and_tell_1.apk)
