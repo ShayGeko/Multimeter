@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.empty.Empty
 import com.untitled.multimeter.experiments.ExperimentsFragment
 import com.untitled.multimeter.login.LoginActivity
+import com.untitled.multimeter.settings.SettingsFragment
 
-class MainMenu : AppCompatActivity() {
+class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_menu)
@@ -33,7 +35,7 @@ class MainMenu : AppCompatActivity() {
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)
 
         //Add fragments to viewpager2
-        val fragmentList = listOf(ExperimentsFragment(), MainFragment(), Empty())
+        val fragmentList = listOf(ExperimentsFragment(), MainFragment(), SettingsFragment())
 
         val viewPagerAdapter =
             ViewPagerAdapter(fragmentList, this.supportFragmentManager, lifecycle)
