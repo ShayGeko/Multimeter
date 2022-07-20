@@ -10,11 +10,23 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.ViewModelProvider
+import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
 
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var viewModel: SettingsViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(requireActivity()).get(SettingsViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +44,16 @@ class SettingsFragment : Fragment() {
             Toast.makeText(requireContext(), "Saved Settings", Toast.LENGTH_SHORT).show()
         }
 
+
+        //
+        val logoutBtn = view.findViewById<Button>(R.id.logout_btn);
+
+        logoutBtn.setOnClickListener {
+
+            viewModel.logout();
+
+            requireActivity().finish()
+        }
         return view
     }
 

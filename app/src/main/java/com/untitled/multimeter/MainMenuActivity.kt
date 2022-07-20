@@ -14,7 +14,7 @@ import com.untitled.multimeter.experiments.ExperimentsFragment
 import com.untitled.multimeter.login.LoginActivity
 import com.untitled.multimeter.settings.SettingsFragment
 
-class MainMenu : AppCompatActivity() {
+class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_menu)
