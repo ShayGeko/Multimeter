@@ -25,7 +25,7 @@
 <iframe width="560" height="315" src="https://www.youtube.com/embed/KIK-r7LPmIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### MVVM diagram:
-<img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png?raw=true" class="img-responsive" alt=""></img>
+<img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png?raw=true" class="img-responsive" alt="">
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png)
 
 ### .apk file
