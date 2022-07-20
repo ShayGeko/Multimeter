@@ -12,7 +12,7 @@ import com.untitled.multimeter.MainMenu
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
-import com.untitled.multimeter.createAccount.CreateAccountActivity
+import com.untitled.multimeter.createaccount.CreateAccountActivity
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
 

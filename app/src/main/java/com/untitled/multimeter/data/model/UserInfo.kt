@@ -4,6 +4,9 @@ import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
+/**
+ * Information about the user
+ */
 class UserInfo() : RealmObject {
     @PrimaryKey
     var id : ObjectId = ObjectId.create()

@@ -1,8 +1,7 @@
-package com.untitled.multimeter.experiments
+package com.untitled.multimeter.experimentdetails
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.TableLayout
@@ -15,28 +14,39 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import com.untitled.multimeter.R
 
 
-class ExperimentEntry : AppCompatActivity() {
+class ExperimentDetailsActivity : AppCompatActivity() {
     private val colors = arrayListOf(Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.YELLOW, Color.WHITE, Color.GRAY, Color.DKGRAY, Color.BLACK)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.experiment_entry)
 
-        val titleView : TextView = findViewById<TextView>(R.id.experiment_title)
-        val collaboratorsView : TextView = findViewById<TextView>(R.id.experiment_collaborators)
-        val dateTimeView : TextView = findViewById<TextView>(R.id.experiment_dateTime)
-        val commentView : TextView = findViewById<TextView>(R.id.experiment_comment)
+        val titleView : TextView = findViewById(R.id.experiment_title)
+        val collaboratorsView : TextView = findViewById(R.id.experiment_collaborators)
+        val dateTimeView : TextView = findViewById(R.id.experiment_dateTime)
+        val commentView : TextView = findViewById(R.id.experiment_comment)
 
         titleView.text = intent.extras?.getString("title")!!
         collaboratorsView.text = intent.extras?.getString("collaborators")!!
         dateTimeView.text = intent.extras?.getString("dateTime")!!
         commentView.text = intent.extras?.getString("comment")!!
 
-        //Format Graph Data
+        //Get the data
         val dataValues = intent.getBundleExtra("data")!!
         val allData: ArrayList<ArrayList<DataPoint>> = dataValues.getSerializable("values") as ArrayList<ArrayList<DataPoint>>
-        val graph = findViewById<View>(com.untitled.multimeter.R.id.graph) as GraphView
 
+        // display the data
+        displayDataOnGraph(allData)
+        displayDataInTheTable(allData)
+    }
+
+    /**
+     * Displayes the data in the graph
+     *
+     * @param allData data to be displayed
+     */
+    private fun displayDataOnGraph(allData : ArrayList<ArrayList<DataPoint>>){
+        val graph = findViewById<View>(com.untitled.multimeter.R.id.graph) as GraphView
         //Graph Display Settings + add data
         var maxY = 0.0
         var maxX = 0.0
@@ -62,18 +72,36 @@ class ExperimentEntry : AppCompatActivity() {
         graph.viewport.isYAxisBoundsManual = true
         graph.viewport.setMinY(0.0)
         graph.viewport.setMaxY(maxY)
+    }
 
+
+    /**
+     * Displays the data in the table
+     *
+     * @param allData data to be displayed
+     */
+    private fun displayDataInTheTable(allData : ArrayList<ArrayList<DataPoint>>){
         //Add entries to table
         val tableLayoutView = findViewById<TableLayout>(R.id.table_layout)
-        val usedXCoordinates = ArrayList<Double>()
 
+        displayTableHeader(tableLayoutView, allData.size)
+        displayTableRows(tableLayoutView, allData)
+    }
+
+    /**
+     * Displays the header of the table (time column, column for each series)
+     *
+     * @param tableLayoutView table to add the header to
+     * @param numSeries number of series to add the columns for
+     */
+    private fun displayTableHeader(tableLayoutView : TableLayout, numSeries: Int){
         //header row
         val row = TableRow(this)
         val timeHeader = TextView(this)
         timeHeader.text = "time"
         timeHeader.gravity = Gravity.CENTER
         row.addView(timeHeader)
-        for (i in 1..allData.size) {
+        for (i in 1..numSeries) {
             val text = TextView(this)
             text.text = "series "+i.toString()
             text.gravity = Gravity.CENTER
@@ -86,10 +114,19 @@ class ExperimentEntry : AppCompatActivity() {
                 TableLayout.LayoutParams.WRAP_CONTENT
             )
         )
+    }
+
+    /**
+     * Displays the rows of the table based on the data
+     *
+     * @param tableLayoutView table to add the header to
+     * @param allData data to be displayed
+     */
+    private fun displayTableRows(tableLayoutView : TableLayout, allData: ArrayList<ArrayList<DataPoint>>){
+        val usedXCoordinates = HashSet<Double>()
 
         for (data in allData) {
             for (dataPoint in data) {
-
                 //if already used x coordinate skip
                 if (dataPoint.x in usedXCoordinates) {
                     break

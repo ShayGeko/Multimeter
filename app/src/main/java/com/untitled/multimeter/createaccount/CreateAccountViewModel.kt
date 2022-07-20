@@ -1,4 +1,4 @@
-package com.untitled.multimeter.createAccount
+package com.untitled.multimeter.createaccount
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
