@@ -6,19 +6,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.untitled.multimeter.MyData
+import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
+import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
 import java.text.DateFormatSymbols
 import java.util.*
 
 
 /**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for the data type.
+ * Adapter for the list of [Experiment]
  */
-class MyItemRecyclerViewAdapter(
-    private var list: List<MyData> = emptyList<MyData>()
-) : RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder>() {
+class ExperimentsRecyclerViewAdapter(
+    private var list: List<Experiment> = emptyList()
+) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -75,7 +75,7 @@ class MyItemRecyclerViewAdapter(
         data.putSerializable("values", dataValues)
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ExperimentEntry::class.java)
+            val intent = Intent(holder.itemView.context, ExperimentDetailsActivity::class.java)
             intent.putExtra("title", currentItem.title)
             intent.putExtra("collaborators", collaboratorString)
             intent.putExtra("dateTime", dateString)

@@ -27,7 +27,7 @@
             android:name=".login.LoginActivity"
             android:exported="false"/>
         <activity
-            android:name=".createAccount.CreateAccountActivity"
+            android:name=".createaccount.CreateAccountActivity"
             android:exported="false"/>
 
         <activity android:name="com.untitled.multimeter.MainMenu"
@@ -39,7 +39,7 @@
         </activity>
 
         <activity
-            android:name="com.untitled.multimeter.experiments.ExperimentEntry"
+            android:name="com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity"
             android:exported="true"/>
     </application>
 </manifest>

@@ -3,7 +3,7 @@ package com.untitled.multimeter
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.untitled.multimeter.createAccount.CreateAccountViewModel
+import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.login.LoginViewModel
 
 class UserViewModelFactory(
