@@ -2,15 +2,18 @@ package com.untitled.multimeter.experiments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.jjoe64.graphview.series.DataPoint
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.R
+import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.createaccount.CreateAccountViewModel
+import io.realm.kotlin.types.ObjectId
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -20,9 +23,15 @@ import kotlin.collections.ArrayList
  */
 class ExperimentListHolderFragment : Fragment() {
     private var dataList = ArrayList<Experiment>()
+    private lateinit var viewModel: ExperimentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val viewModelFactory = UserViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ExperimentViewModel::class.java)
+        var x: ObjectId = ObjectId.create()
+        viewModel.getExperiment(x)
 
         addMockData()
     }

@@ -2,11 +2,14 @@ package com.untitled.multimeter
 
 import android.app.Application
 import android.util.Log
+import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
 import io.realm.kotlin.mongodb.App
 
 class MultimeterApp : Application() {
     val userRepository by lazy {UserRepository()}
+    val experimentRepository by lazy { ExperimentRepository() }
 
     override fun onCreate() {
         super.onCreate()

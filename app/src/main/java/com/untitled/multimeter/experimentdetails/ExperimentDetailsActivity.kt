@@ -1,8 +1,11 @@
 package com.untitled.multimeter.experimentdetails
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -11,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.R
 
 
@@ -173,5 +177,30 @@ class ExperimentDetailsActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    /**
+     * Adds a delete option in the menu
+     */
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.delete_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    /**
+     * On the delete option being selected, insert data into the database, and redirect back to MainMenuActivity
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.menu_delete) {
+
+            //########################
+            // Remove data from the database
+            // TO DO
+            //########################
+
+            val intent = Intent(this, MainMenuActivity::class.java)
+            startActivity(intent)
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

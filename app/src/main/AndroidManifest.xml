@@ -37,5 +37,9 @@
         <activity
             android:name="com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity"
             android:exported="true"/>
+
+        <activity
+            android:name="com.untitled.multimeter.createexperiment.CreateExperimentActivity"
+            android:exported="true"/>
     </application>
 </manifest>

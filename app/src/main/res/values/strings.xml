@@ -36,4 +36,11 @@
         <item>90 Hz</item>
         <item>120 Hz</item>
     </string-array>
+
+    <!-- Create Experiment -->
+    <string name="title">Title</string>
+    <string name="titleHint">Enter Title</string>
+    <string name="collaborators">Collaborators</string>
+    <string name="collaboratorsHint">Enter Collaborators</string>
+    <string name="currentTime">Current Time</string>
 </resources>
