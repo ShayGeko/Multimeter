@@ -2,19 +2,30 @@ package com.untitled.multimeter.data.source
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.CreateAccountModel
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
+import io.realm.kotlin.notifications.InitialObject
+import io.realm.kotlin.notifications.InitialResults
+import io.realm.kotlin.notifications.SingleQueryChange
+import io.realm.kotlin.notifications.UpdatedObject
+import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 
 /**
@@ -155,6 +166,36 @@ class UserRepository : AutoCloseable {
         // mRealm.close()
 
         return result
+    }
+
+    /**
+     * **Should only be called if the user is logged in**
+     *
+     * @return Observable [Result] of query for [UserInfo] for the currently logged in user
+     */
+    private fun getUserInfoWithQueryFlow() : LiveData<UserInfo> {
+        initRealm()
+
+        val resultLiveData = MutableLiveData<UserInfo>()
+
+        val id = ObjectId.from(realmApp.currentUser!!.identity)
+
+        val query = mRealm.query<UserInfo>("_id == $0", id).first()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            query.asFlow().collect{
+                result ->
+                when(result){
+                    is InitialObject<UserInfo>,
+                    is UpdatedObject<UserInfo> -> {
+                        resultLiveData.postValue(result.obj)
+                        this.cancel()
+                    }
+                    else -> {}
+                }
+            }
+        }
+        return resultLiveData
     }
     /**
      * Stores [UserInfo] about just registered user to [Realm]
