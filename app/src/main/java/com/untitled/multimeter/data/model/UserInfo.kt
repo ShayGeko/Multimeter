@@ -14,5 +14,4 @@ class UserInfo() : RealmObject {
     var _partition : String = MultimeterApp.REALM_PARTITION
     var userName : String = ""
     var email : String = ""
-
 }

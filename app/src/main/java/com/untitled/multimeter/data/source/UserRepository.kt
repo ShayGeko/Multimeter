@@ -7,6 +7,7 @@ import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
+import com.untitled.multimeter.data.model.CreateAccountModel
 import com.untitled.multimeter.data.model.UserInfo
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
@@ -17,13 +18,13 @@ import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Repository for users
  *
  */
 class UserRepository {
-    private lateinit var mRealm : Realm
     /**
      * Attempts to login the user with the specified email and password
      *
@@ -61,29 +62,34 @@ class UserRepository {
      *
      * @param email - email
      * @param password - password
-     * @returns
+     * @returns [LiveData] of [Result] with nothing inside on success, or with [Throwable] explaining what went wrong on failure
      */
-    fun register(email: String, password: String) : LiveData<Result<Unit>> {
+    fun register(account : CreateAccountModel) : LiveData<Result<Unit>> {
         val registerResult = MutableLiveData<Result<Unit>> ()
         CoroutineScope(Dispatchers.IO).launch {
             // fancy try-catch block
             runCatching {
 
                 // try to register the user with the provided email and password
-                realmApp.emailPasswordAuth.registerUser(email, password)
+                realmApp.emailPasswordAuth.registerUser(account.email, account.password)
 
 
                 // create the Credentials object from username and password
-                val credentials = Credentials.emailPassword(email, password)
+                val credentials = Credentials.emailPassword(account.email, account.password)
 
                 // login, get the user with matched credentials or throw an exception
                 // output will be wrapped in Result, because of runCatching{}
                 realmApp.login(credentials)
 
+                val userInfo = UserInfo().apply {
+                    this._id = ObjectId.from(realmApp.currentUser!!.identity)
+                    this.email = account.email
+                    this.userName = account.username
+                }
+                addUserInfo(userInfo)
 
             } // if no exception was thrown, propagate the successful Result
                 .onSuccess {
-
                     registerResult.postValue(Result.success(Unit))
                 } // otherwise, propagate the failed result
                 .onFailure { exception : Throwable ->
@@ -94,45 +100,28 @@ class UserRepository {
         return registerResult
     }
 
-    fun addUserInfo(userInfo: UserInfo){
+    fun getUserInfo(id: ObjectId): LiveData<UserInfo>{
+        val resultLiveData = MutableLiveData<UserInfo>()
+
         CoroutineScope(Dispatchers.IO).launch {
 
-            runCatching {
-                // create the Credentials object from username and password
-                val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
-                    .build()
-
-
-                mRealm = Realm.open(config)
-//                    val query = .executeTransactionAsync {
-//                        // using our thread-local new realm instance, query for and update the task status
-//                        val item = it.where<Task>().equalTo("id", id).findFirst()
-//                        item?.statusEnum = status
-//                    }
-                mRealm.writeBlocking {
-                    this.copyToRealm(userInfo)
-
-
-                    userInfo.userName = "some updated username"
-
-                    return@writeBlocking userInfo
-                }
-
-
-            } // if no exception was thrown, propagate the successful Result
-                .onSuccess { userInfo ->
-                    Log.d(APPLICATION_TAG, "UserInfo insert succesful")
-                    Log.d(APPLICATION_TAG, "new username: ${userInfo.userName}")
-                } // otherwise, propagate the failed result
-                .onFailure { exception : Throwable ->
-                    Log.e(APPLICATION_TAG, "UserInfo insert failed")
-                    Log.e(APPLICATION_TAG, exception.message.toString())
-                }
-
-            mRealm.close()
-
-            // fancy try-catch block
-
         }
+
+        return resultLiveData
+    }
+
+    /**
+     * Stores [UserInfo] about just registered user to [Realm
+     *
+     * @param userInfo information about user to store
+     * @return [Result] with inserted [UserInfo] on success or [Result] with [Throwable] explaining what went wrong on failure
+     */
+    private fun addUserInfo(userInfo: UserInfo){
+        val config = SyncConfiguration
+            .Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
+            .build()
+        val mRealm = Realm.open(config)
+        mRealm.writeBlocking { this.copyToRealm(userInfo)}
+        mRealm.close()
     }
 }
