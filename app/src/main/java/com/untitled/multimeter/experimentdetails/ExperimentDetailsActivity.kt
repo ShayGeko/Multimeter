@@ -183,7 +183,9 @@ class ExperimentDetailsActivity : AppCompatActivity() {
      * Adds a delete option in the menu
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.delete_menu, menu)
+        if (intent.extras?.getInt("ReadOnly") == 0) {
+            menuInflater.inflate(R.menu.delete_menu, menu)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

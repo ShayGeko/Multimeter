@@ -103,10 +103,10 @@ class CreateExperimentActivity : AppCompatActivity() {
         Log.e("CreateExperimentActivity", "collaborators: "+collaborators.toString())
         Log.e("CreateExperimentActivity", "dateTime: " +getDateTimeAsString())
 
-        //########################
+        //#########################
         // Add data to the database
         // TO DO
-        //########################
+        //#########################
 
         //Go to Experiments Fragment
         val intent = Intent(this, MainMenuActivity::class.java)

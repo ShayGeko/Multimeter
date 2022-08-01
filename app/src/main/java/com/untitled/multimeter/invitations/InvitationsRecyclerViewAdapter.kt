@@ -1,29 +1,26 @@
-package com.untitled.multimeter.experiments
+package com.untitled.multimeter.invitations
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import com.untitled.multimeter.data.model.Experiment
-import com.untitled.multimeter.databinding.FragmentExperimentsBinding
+import com.untitled.multimeter.databinding.FragmentInvitationsBinding
 import java.text.DateFormatSymbols
 import java.util.*
 
-
-/**
- * Adapter for the list of [Experiment]
- */
-class ExperimentsRecyclerViewAdapter(
+class InvitationsRecyclerViewAdapter(
     private var list: List<Experiment> = emptyList()
-) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<InvitationsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         return ViewHolder(
-            FragmentExperimentsBinding.inflate(
+            FragmentInvitationsBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -34,6 +31,10 @@ class ExperimentsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = list[position]
+
+        //Get buttons from current item
+        val acceptButton = holder.acceptButton
+        val declineButton = holder.declineButton
 
         //Format data into string
         var collaboratorString = ""
@@ -46,29 +47,27 @@ class ExperimentsRecyclerViewAdapter(
             }
         }
 
-        var titleString = "Title: " + currentItem.title
-
-        var dateString = ""
+        //get experiment details from current item
+        var titleString = currentItem.title
         val currentDate = currentItem.date
-        val time = currentDate[Calendar.HOUR_OF_DAY].toString() +":"+ currentDate[Calendar.MINUTE] +":"+ currentDate[Calendar.SECOND]
+
+        //Format date
+        var dateString = "Created: "
+        var seconds: String = currentDate[Calendar.SECOND].toString()
+        if (currentDate[Calendar.SECOND] < 10) {
+            seconds = "0"+currentDate[Calendar.SECOND].toString()
+        }
+        val time = currentDate[Calendar.HOUR_OF_DAY].toString() +":"+ currentDate[Calendar.MINUTE] +":"+ seconds
+        val date = currentDate.get(Calendar.DATE).toString()
         val month = DateFormatSymbols().months[currentDate.get(Calendar.MONTH)]
-        var date = ""
-        if (currentDate[Calendar.DATE] < 10) {
-            date = "0"+currentDate[Calendar.DATE].toString()
-        }
-        else {
-            date = currentDate[Calendar.DATE].toString()
-        }
         val year = currentDate[Calendar.YEAR].toString()
-        val fullDate = month +" "+ date +" "+ year
-        dateString = "$dateString$fullDate, $time"
+        val fullDate = "$month $date $year"
+        dateString += "$fullDate, $time"
 
         //Put values into the textviews
         holder.titleView.text = titleString
-        holder.timeView.text = time
-        holder.monthView.text = month
-        holder.dateView.text = date
-        holder.yearView.text = year
+        holder.dateView.text = dateString
+
         //Set up onClickListener to navigate to ExperimentEntry
         val data = Bundle()
         val dataValues = currentItem.dataValues
@@ -81,24 +80,44 @@ class ExperimentsRecyclerViewAdapter(
             intent.putExtra("dateTime", dateString)
             intent.putExtra("data", data)
             intent.putExtra("comment", currentItem.comment)
-            intent.putExtra("ReadOnly", 0)
+            intent.putExtra("ReadOnly", 1)
             holder.itemView.context.startActivity(intent)
+        }
+
+        //On accept button clicked, add experiment to the current users list of participating experiments,
+        // then remove invitation from the users invatation list in the database
+        acceptButton.setOnClickListener {
+            addExperimentToUser()
+            removeInvitation()
+        }
+
+        //On decline button clicked, remove invitation from the users invitation list in the database
+        declineButton.setOnClickListener {
+            removeInvitation()
         }
     }
 
     override fun getItemCount(): Int = list.size
 
-    inner class ViewHolder(binding: FragmentExperimentsBinding) :
+    inner class ViewHolder(binding: FragmentInvitationsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val titleView: TextView = binding.itemTitle
-        val timeView: TextView = binding.itemTime
         val dateView: TextView = binding.itemDate
-        val monthView: TextView = binding.itemMonth
-        val yearView: TextView = binding.itemYear
+        val acceptButton: Button = binding.buttonAccept
+        val declineButton: Button = binding.buttonDecline
 
         override fun toString(): String {
             return super.toString()
         }
     }
 
+    //TODO
+    private fun addExperimentToUser() {
+
+    }
+
+    //TODO
+    private fun removeInvitation() {
+
+    }
 }

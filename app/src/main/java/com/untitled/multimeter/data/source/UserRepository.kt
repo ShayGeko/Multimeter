@@ -73,4 +73,17 @@ class UserRepository {
 
         return registerResult
     }
+
+    /**
+     * Attempts to register the user with the specified email and password
+     *
+     * @param user - email
+     * @returns
+     * LiveData of the invitations for the user
+     */
+    fun getInvitations(user: User) : LiveData<Result<Unit>> {
+        val registerResult = MutableLiveData<Result<Unit>> ()
+        //query database
+        return registerResult
+    }
 }
