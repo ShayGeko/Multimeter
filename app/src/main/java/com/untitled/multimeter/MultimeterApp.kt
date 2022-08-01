@@ -11,12 +11,14 @@ class MultimeterApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
+
         realmApp = App.create(getString(R.string.realm_app_id))
 
         Log.d(APPLICATION_TAG, "Initialized the Realm App")
     }
     companion object{
         lateinit var realmApp : App
-        val APPLICATION_TAG = "Multimeter"
+        const val APPLICATION_TAG = "Multimeter"
+        const val REALM_PARTITION = "1"
     }
 }

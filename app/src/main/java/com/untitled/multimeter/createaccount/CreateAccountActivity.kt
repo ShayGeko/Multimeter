@@ -1,5 +1,6 @@
 package com.untitled.multimeter.createaccount
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +8,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.data.model.UserInfo
+import com.untitled.multimeter.login.LoginActivity
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.UserAlreadyExistsException
+import io.realm.kotlin.types.ObjectId
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
@@ -87,15 +92,19 @@ class CreateAccountActivity : AppCompatActivity() {
             // if result is successful, return to the main activity
             it.onSuccess {
                 // TODO: add custom user data
-//                val userInfo = UserInfo().apply {
-//                    this.id = ObjectId.Companion.from(it.identity)
-//                    this.email = email
-//                    this.userName = username
-//                }
-//
-//
-//                viewModel.addUserData(userInfo);
+                val userInfo = UserInfo().apply {
+                    this._id = ObjectId.create()
+                    this.email = email
+                    this.userName = username
+                }
+
+
+                viewModel.addUserData(userInfo);
                 Toast.makeText(this, "Registered successfully!", Toast.LENGTH_LONG).show()
+
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
                 finish()
             }
             // otherwise, display error to the user

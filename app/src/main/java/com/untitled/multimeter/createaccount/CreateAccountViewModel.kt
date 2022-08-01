@@ -41,6 +41,6 @@ class CreateAccountViewModel(private val repository: UserRepository) : ViewModel
      *
      */
     fun addUserData(userInfo: UserInfo){
-
+        repository.addUserInfo(userInfo)
     }
 }

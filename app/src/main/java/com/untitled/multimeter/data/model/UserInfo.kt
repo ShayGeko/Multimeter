@@ -1,16 +1,18 @@
 package com.untitled.multimeter.data.model
 
+import com.untitled.multimeter.MultimeterApp
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.realm.kotlin.types.annotations.*
 
 /**
  * Information about the user
  */
 class UserInfo() : RealmObject {
     @PrimaryKey
-    var id : ObjectId = ObjectId.create()
-
+    var _id : ObjectId = ObjectId.create()
+    var _partition : String = MultimeterApp.REALM_PARTITION
     var userName : String = ""
     var email : String = ""
+
 }
