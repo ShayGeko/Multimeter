@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.Measurement
+import com.untitled.multimeter.data.model.MeasurementDataPoint
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
@@ -37,7 +38,7 @@ class MultimeterApp : Application() {
             }
             else{
                 val config = SyncConfiguration
-                    .Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class, Experiment::class, Measurement::class))
+                    .Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class, Experiment::class, Measurement::class, MeasurementDataPoint::class))
                     .build()
                 mRealm = Realm.open(config)
 

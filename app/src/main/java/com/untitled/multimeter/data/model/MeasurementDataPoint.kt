@@ -16,6 +16,8 @@ import kotlin.collections.ArrayList
  * Measurement Info
  */
 class MeasurementDataPoint() : RealmObject {
+    @PrimaryKey
+    var _id : ObjectId = ObjectId.create()
 
     var xValues: Double = 0.0
     var yValues: Double = 0.0

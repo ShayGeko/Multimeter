@@ -30,6 +30,7 @@ class Experiment() : RealmObject {
     @PrimaryKey
     var _id : ObjectId = ObjectId.create()
     var _partition : String = MultimeterApp.REALM_PARTITION
+
     var title : String = ""
     var date: Calendar = Calendar.getInstance()
     var collaborators : RealmList<String> = RealmListString(ArrayList<String>())
