@@ -20,28 +20,8 @@ class CreateAccountViewModel(private val repository: UserRepository) : ViewModel
      * LiveData of acquired User wrapped in Result class on success,
      * and error wrapped in Result otherwise
      */
-    fun registerUser(account : CreateAccountModel) : LiveData<Result<Unit>> {
-        return repository.register(account) as MutableLiveData<Result<Unit>>
-    }
-    /**
-     * Attempts to login the user with the specified email and password
-     *
-     * @param email email
-     * @param password password
-     *
-     * @return
-     * LiveData of acquired User wrapped in Result class on success,
-     * and error wrapped in Result otherwise
-     */
-    fun login(email: String, password: String) : LiveData<Result<User>> {
-        return repository.login(email, password)
-    }
 
-    /**
-     * Adds the addition user info
-     *
-     */
-    fun addUserData(userInfo: UserInfo){
-
+    fun registerUser(createAccountModel: CreateAccountModel) : LiveData<Result<Unit>> {
+        return repository.register(createAccountModel) as MutableLiveData<Result<Unit>>
     }
 }

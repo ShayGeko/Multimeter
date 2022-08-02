@@ -29,7 +29,6 @@ class MainMenuActivity : AppCompatActivity() {
         }
         else {
             Log.d(MultimeterApp.APPLICATION_TAG, user.toString())
-            Toast.makeText(this, "Welcome, ${user.identity}", Toast.LENGTH_LONG).show()
         }
         //Get xml views
         val tabLayout = findViewById<TabLayout>(R.id.main_menu_tablayout)
