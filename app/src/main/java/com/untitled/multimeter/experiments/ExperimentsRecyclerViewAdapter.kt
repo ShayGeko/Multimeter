@@ -2,13 +2,19 @@ package com.untitled.multimeter.experiments
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.model.ExperimentModel
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
+import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
+import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
 
@@ -17,7 +23,7 @@ import java.util.*
  * Adapter for the list of [Experiment]
  */
 class ExperimentsRecyclerViewAdapter(
-    private var list: List<Experiment> = emptyList()
+    private var list: List<ExperimentModel> = emptyList()
 ) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +40,13 @@ class ExperimentsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = list[position]
+
+        Log.e("ExperimentsRecyclerViewAdapter", "id: " +currentItem.id.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "Title: "+currentItem.title.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "collaborators: "+currentItem.collaborators.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "comment: " +currentItem.comment.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "dateTime: " +currentItem.date.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "measurements: " +currentItem.measurements.toString())
 
         //Format data into string
         var collaboratorString = ""
@@ -69,11 +82,13 @@ class ExperimentsRecyclerViewAdapter(
         holder.monthView.text = month
         holder.dateView.text = date
         holder.yearView.text = year
-        //Set up onClickListener to navigate to ExperimentEntry
+
+        //bundle measurements to send to activity
         val data = Bundle()
-        val dataValues = currentItem.dataValues
+        val dataValues = currentItem.measurements
         data.putSerializable("values", dataValues)
 
+        //Set up onClickListener to navigate to ExperimentEntry
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ExperimentDetailsActivity::class.java)
             intent.putExtra("title", currentItem.title)
@@ -81,8 +96,11 @@ class ExperimentsRecyclerViewAdapter(
             intent.putExtra("dateTime", dateString)
             intent.putExtra("data", data)
             intent.putExtra("comment", currentItem.comment)
+            intent.putExtra("ReadOnly", 0)
+            intent.putExtra("id",currentItem.id.toString())
             holder.itemView.context.startActivity(intent)
         }
+
     }
 
     override fun getItemCount(): Int = list.size
@@ -99,5 +117,4 @@ class ExperimentsRecyclerViewAdapter(
             return super.toString()
         }
     }
-
 }
