@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:iconSpaceReserved="false">
+
+    <PreferenceCategory
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:iconSpaceReserved="false"
+        app:title="User Information">
+
+        <EditTextPreference
+            android:id="@+id/textViewUsername"
+            android:key="username"
+            android:summary="Enter your username"
+            android:title="@string/username"
+            android:visibility="visible"
+            app:iconSpaceReserved="false"
+            tools:visibility="visible" />
+
+        <EditTextPreference
+            android:id="@+id/editTextName"
+            android:inputType="textPersonName"
+            android:key="name"
+            android:summary="Enter your name"
+            android:title="@string/name"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:iconSpaceReserved="false"
+        app:title="Miscellaneous Settings">
+
+        <SwitchPreferenceCompat
+            android:key="theme mode"
+            android:title="Light/Dark Mode"
+            app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            android:entries="@array/frequencyPreference"
+            android:entryValues="@array/frequencyPreferenceValues"
+            android:defaultValue="60"
+            android:key="frequency"
+            android:summary="Select how often you would like to read from the Multimeter"
+            android:title="Select Frequency"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+
+    <Preference
+        android:key="logout"
+        android:title="Logout"
+        app:iconSpaceReserved="false" />
+</PreferenceScreen>

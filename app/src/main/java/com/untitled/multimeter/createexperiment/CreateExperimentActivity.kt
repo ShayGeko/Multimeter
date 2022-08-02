@@ -15,6 +15,7 @@ import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
@@ -99,8 +100,7 @@ class CreateExperimentActivity : AppCompatActivity() {
      * Simply redirects to the Experiments Fragment
      */
     private fun cancelFunctions() {
-        val intent = Intent(this, MainMenuActivity::class.java)
-        startActivity(intent)
+        finish()
     }
 
     /**
@@ -119,26 +119,18 @@ class CreateExperimentActivity : AppCompatActivity() {
             this.date = Calendar.getInstance()
             this.collaborators = RealmListString(experimentCollaborators)
             this.comment = ""
-            this.measurements = RealmListObjectId(ArrayList<ObjectId>())
+            this.measurements = realmListOf()
         }
 
         //Insert into database
-        Log.e("CreateExperimentActivity","Start Insert Into Database And add to user")
         viewModel.insertExperiment(newExperiment).observe(this) { result ->
             result.onSuccess {
-                Log.e("CreateExperimentActivity", "insertSuccess, Starting add to user")
                 viewModel.addExperimentToUser(newExperiment)
-
-                //Go to Experiments Fragment
-                val intent = Intent(this, MainMenuActivity::class.java)
-                startActivity(intent)
+                finish()
             }
             result.onFailure { error ->
                 Log.e("CreateExperimentActivity", "insertFail")
-
-                //Go to Experiments Fragment
-                val intent = Intent(this, MainMenuActivity::class.java)
-                startActivity(intent)
+                finish()
             }
         }
     }

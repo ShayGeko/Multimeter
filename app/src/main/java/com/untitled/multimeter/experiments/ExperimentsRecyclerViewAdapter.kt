@@ -9,14 +9,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.jjoe64.graphview.series.DataPoint
+import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.ExperimentModel
+import com.untitled.multimeter.data.model.MeasurementDataPoint
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -25,6 +30,7 @@ import java.util.*
 class ExperimentsRecyclerViewAdapter(
     private var list: List<ExperimentModel> = emptyList()
 ) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
+    private lateinit var viewModel: ExperimentViewModel
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -40,8 +46,6 @@ class ExperimentsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = list[position]
-
-        Log.e("ExperimentsRecyclerViewAdapter", "id: " +currentItem.id.toString())
 
         //Format data into string
         var collaboratorString = ""
@@ -78,10 +82,25 @@ class ExperimentsRecyclerViewAdapter(
         holder.dateView.text = date
         holder.yearView.text = year
 
-        //bundle measurements to send to activity
+        //change all objectIds in measurements to string which is serializable
+        //dataValuesUserNames contains the userName for the user
+        //dataValuesDataPoints contains an ArrayList of ArrayLists of DataPoints
         val data = Bundle()
         val dataValues = currentItem.measurements
-        data.putSerializable("values", dataValues)
+        val dataValuesUserNames = ArrayList<String>()
+        val dataValuesDataPoints = ArrayList<ArrayList<DataPoint>>()
+        for (measurement in dataValues) {
+            //TODO: Query for username
+            dataValuesUserNames.add(measurement.user.toString())
+
+            val dataPoints = ArrayList<DataPoint>()
+            for (dataPoint in measurement.dataPoints) {
+                dataPoints.add(DataPoint(dataPoint.x,dataPoint.y))
+            }
+            dataValuesDataPoints.add(dataPoints)
+        }
+        data.putSerializable("users", dataValuesUserNames)
+        data.putSerializable("datapoints", dataValuesDataPoints)
 
         //Set up onClickListener to navigate to ExperimentEntry
         holder.itemView.setOnClickListener {

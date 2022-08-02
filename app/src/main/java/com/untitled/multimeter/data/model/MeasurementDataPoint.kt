@@ -19,6 +19,6 @@ class MeasurementDataPoint() : RealmObject {
     @PrimaryKey
     var _id : ObjectId = ObjectId.create()
 
-    var xValues: Double = 0.0
-    var yValues: Double = 0.0
+    var x: Double = 0.0
+    var y: Double = 0.0
 }

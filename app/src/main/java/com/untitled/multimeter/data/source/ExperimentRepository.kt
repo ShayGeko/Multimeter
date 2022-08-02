@@ -3,6 +3,7 @@ package com.untitled.multimeter.data.source
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.jjoe64.graphview.series.DataPoint
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
@@ -10,8 +11,10 @@ import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.model.ExperimentModel
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
+import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +39,6 @@ class ExperimentRepository {
 
             //Call private funtion to get the list of experiments for this user
             val userExperimentList = getAllExperimentObjectIdsForUser()
-            Log.e("ExperimentRepository", "getAllExperimentObjectIdsForUser()" + userExperimentList.toString())
 
             //Query for experiments that match with the ObjectIds in userExperimentList, add to userExperiments
             val userExperiments = ArrayList<ExperimentModel>()
@@ -58,7 +60,6 @@ class ExperimentRepository {
                             }
                         }
                     }
-                    Log.e("ExperimentRepository", "userExperiments :" + userExperiments.toString())
                 }
             }.onSuccess {
                 result.postValue(Result.success(userExperiments))
@@ -138,23 +139,23 @@ class ExperimentRepository {
         val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                //Add Dummy Measurements
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 1.0; this.y = 6.2 })
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 2.0; this.y = 4.3 })
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 3.0; this.y = 5.0 })
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 4.0; this.y = 6.2 })
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 5.0; this.y = 10.0 }
-
-
                 mRealm.writeBlocking {
+
+                    //Inserting dummy data
+                    //TODO: delete this
+                    experiment.measurements = measurementsDummyData()
+
                     this.copyToRealm(experiment)
 
                 }
+
+                //Logs inserted experiments info
+                /*
                 Log.e("ExperimentRepository", "userInfo _id: "+experiment._id.toString())
                 Log.e("ExperimentRepository", "userInfo title: "+experiment.title.toString())
                 Log.e("ExperimentRepository", "userInfo collaborators: "+experiment.collaborators.toString())
                 Log.e("ExperimentRepository", "userInfo comment: "+experiment.comment.toString())
-                Log.e("ExperimentRepository", "userInfo measurements: "+experiment.measurements.toString())
+                Log.e("ExperimentRepository", "userInfo measurements: "+experiment.measurements.toString())*/
 
 
             }
@@ -207,12 +208,50 @@ class ExperimentRepository {
 
 
     private fun experimentToExperimentDataClass(experiment: Experiment): ExperimentModel {
+        val measurements: ArrayList<MeasurementModel> = ArrayList()
+        for (currentMeasurement in experiment.measurements) {
+            val dataPoints = ArrayList<DataPoint>()
+            for (currentDataPoints in ArrayList(currentMeasurement.dataPoints.toList())) {
+                dataPoints.add(DataPoint(currentDataPoints.x, currentDataPoints.y))
+            }
+            measurements.add(MeasurementModel(currentMeasurement._id, currentMeasurement.user, dataPoints))
+        }
         return ExperimentModel(
             experiment._id,
             experiment.title,
             experiment.date,
             experiment.comment,
             ArrayList(experiment.collaborators.toList()),
-            ArrayList(experiment.measurements.toList()))
+            measurements)
+    }
+
+    private fun measurementsDummyData(): RealmList<Measurement> {
+        //TODO: delete this
+        var result: RealmList<Measurement> = realmListOf()
+        var dummyMeasurementDataPoint = realmListOf<MeasurementDataPoint>()
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 1.0; this.y = 6.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 2.0; this.y = 4.3 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 3.0; this.y = 5.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 4.0; this.y = 6.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 5.0; this.y = 10.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 6.0; this.y = 3.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 7.0; this.y = 9.4 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 8.0; this.y = 3.6 })
+        var dummyMeasurement1 = Measurement().apply {
+            this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+            this.dataPoints = dummyMeasurementDataPoint
+        }
+        dummyMeasurementDataPoint = realmListOf<MeasurementDataPoint>()
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 6.0; this.y = 4.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 2.0; this.y = 5.3 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 4.0; this.y = 1.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 5.0; this.y = 4.0 })
+        var dummyMeasurement2 = Measurement().apply {
+            this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+            this.dataPoints = dummyMeasurementDataPoint
+        }
+        result.add(dummyMeasurement1)
+        result.add(dummyMeasurement2)
+        return result
     }
 }

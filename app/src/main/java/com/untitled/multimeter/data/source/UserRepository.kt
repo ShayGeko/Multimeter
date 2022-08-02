@@ -146,21 +146,18 @@ class UserRepository {
                     val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
                     val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
                     val userInfo = userQuery.find()[0]
-                    Log.e("UserRepository", "userInfo _id: "+userInfo._id.toString())
-                    Log.e("UserRepository", "userInfo username: "+userInfo.userName.toString())
-                    Log.e("UserRepository", "userInfo email: "+userInfo.email.toString())
-                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())
 
                     //Add Experiments to the user
                     val currentExperiments = userInfo.experiments
                     currentExperiments.add(experiment._id)
                     userInfo.experiments = currentExperiments
 
-                    Log.e("UserRepository", "userInfo -> AFTER APPLY")
+                    //Logs the user
+                    /*
                     Log.e("UserRepository", "userInfo _id: "+userInfo._id.toString())
                     Log.e("UserRepository", "userInfo username: "+userInfo.userName.toString())
                     Log.e("UserRepository", "userInfo email: "+userInfo.email.toString())
-                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())
+                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())*/
 
                     return@writeBlocking userInfo
                 }
@@ -211,6 +208,44 @@ class UserRepository {
                     Log.e("removeExperimentFromUser", exception.message.toString())
                 }
         }
+    }
+
+    /**
+     * Get the users username
+     *
+     * @param objectId = ObjectId of the requested user
+     */
+    fun getUserName(objectId: ObjectId) : LiveData<Result<String>>{
+        val result = MutableLiveData<Result<String>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            initRealm()
+            runCatching {
+                var userName: String? = null
+                mRealm.writeBlocking {
+
+                    //Get the current users entry
+                    val userId = objectId
+                    val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
+                    val userInfo = userQuery.find()[0]
+
+                    //Get userName of the user
+                    userName = userInfo.userName
+                }
+                if (userName == null) {
+                    throw RealmObjectNotFoundException("UserName for the current user not found!")
+                }
+                return@runCatching userName!!
+            }
+                .onSuccess { userName ->
+                    Log.d("getUserName", "getUserName succesful")
+                    result.postValue(Result.success(userName))
+                }
+                .onFailure { exception: Throwable ->
+                    Log.e("getUserName", "getUserName failed")
+                    Log.e("getUserName", exception.message.toString())
+                }
+        }
+        return result
     }
 
     /**
