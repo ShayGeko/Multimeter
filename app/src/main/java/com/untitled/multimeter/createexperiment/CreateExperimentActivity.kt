@@ -121,13 +121,21 @@ class CreateExperimentActivity : AppCompatActivity() {
         }
 
         //Insert into database
+        //Observers are to ensure that finish() is called after all DB operations
         viewModel.insertExperiment(newExperiment).observe(this) { result ->
             result.onSuccess {
-                viewModel.addExperimentToUser(newExperiment)
-                finish()
+                viewModel.addExperimentToUser(newExperiment).observe(this) { result ->
+                    result.onSuccess {
+                        finish()
+                    }
+                    result.onFailure { error ->
+                        Log.e("CreateExperimentActivity", "addExperimentToUser: " + error.toString())
+                        finish()
+                    }
+                }
             }
             result.onFailure { error ->
-                Log.e("CreateExperimentActivity", "insertFail")
+                Log.e("CreateExperimentActivity", "Insert Failed: " + error.toString())
                 finish()
             }
         }
