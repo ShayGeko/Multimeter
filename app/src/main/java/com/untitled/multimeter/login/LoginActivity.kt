@@ -74,7 +74,9 @@ class LoginActivity : AppCompatActivity() {
             loginBtn.isEnabled = true
 
             // if result is successful, return to the main activity
-            it.onSuccess {
+            it.onSuccess { userInfo ->
+
+                Toast.makeText(this, "Welcome, ${userInfo.userName}", Toast.LENGTH_LONG).show()
                 startActivity(Intent(application, MainMenuActivity::class.java))
                 finish()
             }
