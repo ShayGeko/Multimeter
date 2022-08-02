@@ -2,7 +2,6 @@ package com.untitled.multimeter.connection
 
 import android.content.Intent
 import android.graphics.Color
-import android.icu.util.Measure
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -16,34 +15,57 @@ import androidx.fragment.app.Fragment
 import com.untitled.multimeter.R
 import com.untitled.multimeter.mesurement.MeasurementFragment
 
-
+/**
+ * Connection UI. This class handles and displays the
+ * connection status of the external multimeter device.
+ */
 class ConnectionFragment : Fragment() {
+    private var connected: Boolean = false
     private lateinit var root: View
     private lateinit var connectionStatusText: TextView
     private lateinit var connectionHelpText: TextView
     private lateinit var connectionButton: Button
     private lateinit var measureButton: Button
-    private var connected: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("Debug", "CONNECT: onCreate")
+
+        if (savedInstanceState != null) {
+            connected = savedInstanceState.getBoolean("connected")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("Debug", "CONNECT: onCreateView")
         root = inflater.inflate(R.layout.fragment_connection, container, false)
-        connectionStatusText = root.findViewById(R.id.connection_status)
-        connectionHelpText = root.findViewById(R.id.connection_help)
-        measureButtonSetup()
-        connectButtonSetup()
+
+        if (!connected) {
+//            connectionStatusText = root.findViewById(R.id.connection_status)
+//            connectionHelpText = root.findViewById(R.id.connection_help)
+//            measureButtonSetup()
+//            connectButtonSetup()
+        }
 
         return root
     }
 
-    /**
-     * Set's up the "connect" button, adds a listener to it
-     */
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d("Debug", "CONNECT: onSavedInstanceState")
+        if (connected) {
+            outState.putBoolean("connected", true)
+        } else {
+            outState.putBoolean("connected", false)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        Log.d("Debug", "Session resumed.")
+        Log.d("Debug", "CONNECT: Session resumed.")
 
         if (connected) {
             connectionStatusText.text = "Connected"
@@ -54,6 +76,9 @@ class ConnectionFragment : Fragment() {
         }
     }
 
+    /**
+     * Sets up the "Measure" button and attaches a listener to it
+     */
     private fun measureButtonSetup() {
         measureButton = root.findViewById(R.id.measure_btn)
         measureButton.isVisible = false
@@ -64,6 +89,9 @@ class ConnectionFragment : Fragment() {
         }
     }
 
+    /**
+     * Sets up the "Connect" button and attaches a listener to it
+     */
     private fun connectButtonSetup() {
         connectionButton = root.findViewById(R.id.connection_btn)
         connectionButton.setOnClickListener {
