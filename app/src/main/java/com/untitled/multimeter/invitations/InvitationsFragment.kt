@@ -2,31 +2,20 @@ package com.untitled.multimeter.invitations
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.jjoe64.graphview.series.DataPoint
-import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
-import com.untitled.multimeter.createexperiment.CreateExperimentActivity
-import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
-import com.untitled.multimeter.experiments.ExperimentViewModel
-import com.untitled.multimeter.experiments.ExperimentsRecyclerViewAdapter
+import com.untitled.multimeter.data.model.ExperimentModel
 import com.untitled.multimeter.login.LoginActivity
-import io.realm.kotlin.mongodb.exceptions.ConnectionException
-import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
 import io.realm.kotlin.types.ObjectId
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -34,7 +23,7 @@ import kotlin.collections.ArrayList
  */
 class InvitationsFragment : Fragment() {
     private var invitationsList = ArrayList<Experiment>()
-    private var invitedExperimentsList = ArrayList<Experiment>()
+    private var invitedExperimentsList = ArrayList<ExperimentModel>()
     private lateinit var viewModel: InvitationsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +68,7 @@ class InvitationsFragment : Fragment() {
             }
         }*/
 
-        addMockData(invitedExperimentsList)
+        //addMockData(invitedExperimentsList)
     }
 
     override fun onCreateView(
@@ -98,7 +87,7 @@ class InvitationsFragment : Fragment() {
         return view
     }
 
-
+/*
     // TW: lots of mock data below
     private fun addMockData(dataList: ArrayList<Experiment>){
         //Fake data
@@ -193,5 +182,5 @@ class InvitationsFragment : Fragment() {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Donec lobortis elit non aliquam imperdiet. Fusce pulvinar lectus ligula, " +
                 "non commodo diam fermentum sagittis. Proin at augue in metus eleifend feugiat " +
-                "nec at odio. In tincidunt iaculis luctus. Sed a sollicitudin."
+                "nec at odio. In tincidunt iaculis luctus. Sed a sollicitudin."*/
 }

@@ -6,13 +6,21 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.R
+import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.createaccount.CreateAccountViewModel
+import com.untitled.multimeter.data.model.*
+import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CreateExperimentActivity : AppCompatActivity() {
+    private lateinit var viewModel: CreateExperimentViewModel
     private lateinit var titleEditText: EditText
     private lateinit var collaboratorsEditText: EditText
     private lateinit var cancelButton : Button
@@ -20,7 +28,7 @@ class CreateExperimentActivity : AppCompatActivity() {
     private lateinit var currentTimeTextView: TextView
     private lateinit var friendsArray: ArrayList<String>
     private lateinit var collaboratorsChoices: ArrayList<Int>
-    private lateinit var collaborators: ArrayList<String>
+    private lateinit var experimentCollaborators: ArrayList<String>
     private lateinit var dateTimeTimer: Timer
 
 
@@ -28,9 +36,13 @@ class CreateExperimentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_experiment)
 
+        // get the viewmodel
+        val viewModelFactory = UserViewModelFactory(application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(CreateExperimentViewModel::class.java)
+
         //Initialize lateinit variables
         collaboratorsChoices = ArrayList()
-        collaborators = ArrayList()
+        experimentCollaborators = ArrayList<String>()
 
         //Get all the views
         titleEditText = findViewById(R.id.title_edittext)
@@ -96,21 +108,37 @@ class CreateExperimentActivity : AppCompatActivity() {
 
         //Get input from edit text
         val title = titleEditText.text.toString()
-        val collaborators = collaboratorsEditText.text.toString()
         val dateTime = Calendar.getInstance()
 
-        Log.e("CreateExperimentActivity", "Title: "+title.toString())
-        Log.e("CreateExperimentActivity", "collaborators: "+collaborators.toString())
-        Log.e("CreateExperimentActivity", "dateTime: " +getDateTimeAsString())
+        //Create New Experiment Entry
+        val newExperiment = Experiment().apply {
+            this._id = ObjectId.create()
+            this.title = title
+            this.date = Calendar.getInstance()
+            this.collaborators = RealmListString(experimentCollaborators)
+            this.comment = ""
+            this.measurements = RealmListObjectId(ArrayList<ObjectId>())
+        }
 
-        //#########################
-        // Add data to the database
-        // TO DO
-        //#########################
+        //Insert into database
+        Log.e("CreateExperimentActivity","Start Insert Into Database And add to user")
+        viewModel.insertExperiment(newExperiment).observe(this) { result ->
+            result.onSuccess {
+                Log.e("CreateExperimentActivity", "insertSuccess, Starting add to user")
+                viewModel.addExperimentToUser(newExperiment)
 
-        //Go to Experiments Fragment
-        val intent = Intent(this, MainMenuActivity::class.java)
-        startActivity(intent)
+                //Go to Experiments Fragment
+                val intent = Intent(this, MainMenuActivity::class.java)
+                startActivity(intent)
+            }
+            result.onFailure { error ->
+                Log.e("CreateExperimentActivity", "insertFail")
+
+                //Go to Experiments Fragment
+                val intent = Intent(this, MainMenuActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
     /**
@@ -144,13 +172,13 @@ class CreateExperimentActivity : AppCompatActivity() {
         builder.setPositiveButton("OK") { dialog, whichButton ->
 
             //Clear previous choices
-            collaborators.clear()
+            experimentCollaborators.clear()
 
             //Prepare edittext string
             var collaboratorString = ""
 
             for (x in collaboratorsChoices) {
-                collaborators.add(friendsCharSequence[x] as String)
+                experimentCollaborators.add(friendsCharSequence[x] as String)
                 collaboratorString += friendsCharSequence[x].toString()
                 if (x != collaboratorsChoices.last()) {
                     collaboratorString += ", "

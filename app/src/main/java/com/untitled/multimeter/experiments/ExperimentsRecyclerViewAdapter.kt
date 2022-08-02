@@ -2,13 +2,15 @@ package com.untitled.multimeter.experiments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.model.ExperimentModel
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
+import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import java.text.DateFormatSymbols
 import java.util.*
 
@@ -17,7 +19,7 @@ import java.util.*
  * Adapter for the list of [Experiment]
  */
 class ExperimentsRecyclerViewAdapter(
-    private var list: List<Experiment> = emptyList()
+    private var list: List<ExperimentModel> = emptyList()
 ) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +36,13 @@ class ExperimentsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = list[position]
+
+        Log.e("ExperimentsRecyclerViewAdapter", "id: " +currentItem.id.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "Title: "+currentItem.title.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "collaborators: "+currentItem.collaborators.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "comment: " +currentItem.comment.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "dateTime: " +currentItem.date.toString())
+        Log.e("ExperimentsRecyclerViewAdapter", "measurements: " +currentItem.measurements.toString())
 
         //Format data into string
         var collaboratorString = ""
@@ -71,7 +80,7 @@ class ExperimentsRecyclerViewAdapter(
         holder.yearView.text = year
         //Set up onClickListener to navigate to ExperimentEntry
         val data = Bundle()
-        val dataValues = currentItem.dataValues
+        val dataValues = currentItem.measurements
         data.putSerializable("values", dataValues)
 
         holder.itemView.setOnClickListener {
@@ -84,6 +93,7 @@ class ExperimentsRecyclerViewAdapter(
             intent.putExtra("ReadOnly", 0)
             holder.itemView.context.startActivity(intent)
         }
+
     }
 
     override fun getItemCount(): Int = list.size
@@ -100,5 +110,4 @@ class ExperimentsRecyclerViewAdapter(
             return super.toString()
         }
     }
-
 }

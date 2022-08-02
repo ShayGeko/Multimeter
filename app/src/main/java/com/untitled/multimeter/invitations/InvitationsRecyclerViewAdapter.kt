@@ -8,13 +8,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
-import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.databinding.FragmentInvitationsBinding
+import com.untitled.multimeter.data.model.ExperimentModel
 import java.text.DateFormatSymbols
 import java.util.*
 
 class InvitationsRecyclerViewAdapter(
-    private var list: List<Experiment> = emptyList()
+    private var list: List<ExperimentModel> = emptyList()
 ) : RecyclerView.Adapter<InvitationsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,8 +38,8 @@ class InvitationsRecyclerViewAdapter(
 
         //Format data into string
         var collaboratorString = ""
-        for (currentCollaborator in currentItem.collaborators) {
-            if (currentCollaborator != currentItem.collaborators.last() ) {
+        for (currentCollaborator in currentItem.collaborators!!) {
+            if (currentCollaborator != currentItem.collaborators!!.last() ) {
                 collaboratorString = collaboratorString + currentCollaborator + ", "
             }
             else {
@@ -70,7 +70,7 @@ class InvitationsRecyclerViewAdapter(
 
         //Set up onClickListener to navigate to ExperimentEntry
         val data = Bundle()
-        val dataValues = currentItem.dataValues
+        val dataValues = arrayOf(currentItem.measurements)
         data.putSerializable("values", dataValues)
 
         holder.itemView.setOnClickListener {

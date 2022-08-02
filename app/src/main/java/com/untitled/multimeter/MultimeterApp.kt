@@ -20,6 +20,7 @@ class MultimeterApp : Application() {
     }
     companion object{
         lateinit var realmApp : App
-        val APPLICATION_TAG = "Multimeter"
+        const val APPLICATION_TAG = "Multimeter"
+        const val REALM_PARTITION = "1"
     }
 }
