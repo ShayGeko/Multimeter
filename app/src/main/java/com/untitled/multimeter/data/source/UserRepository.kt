@@ -130,7 +130,8 @@ class UserRepository {
      * @returns
      * LiveData of the invitations for the user
      */
-    fun addExperimentToUser(experiment: Experiment){
+    fun addExperimentToUser(experiment: Experiment): LiveData<Result<Boolean>>{
+        val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             initRealm()
             runCatching {
@@ -159,16 +160,15 @@ class UserRepository {
                 .onSuccess { userInfo ->
                     Log.d("UserRepository", "Experiment add succesful")
                     Log.d("UserRepository", "new experiments: ${userInfo!!.experiments.toString()}")
+                    result.postValue(Result.success(true))
                 } // otherwise, propagate the failed result
                 .onFailure { exception : Throwable ->
                     Log.e("UserRepository", "Experiment add failed")
                     Log.e("UserRepository", exception.message.toString())
+                    result.postValue(Result.failure(exception))
                 }
-
-
-            // fancy try-catch block
-
         }
+        return result
     }
 
     /**
