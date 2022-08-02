@@ -21,7 +21,6 @@ import com.untitled.multimeter.mesurement.MeasurementFragment
  * connection status of the external multimeter device.
  */
 class ConnectionFragment : Fragment() {
-    private var connected: Boolean = false
     private lateinit var root: View
     private lateinit var connectionStatusText: TextView
     private lateinit var connectionHelpText: TextView
@@ -30,52 +29,45 @@ class ConnectionFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("Debug", "CONNECT: onCreate")
-
-        if (savedInstanceState != null) {
-            connected = savedInstanceState.getBoolean("connected")
-        }
-        println("Connection status: $connected")
+        Log.d("Main Fragment State", MainFragment.state)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("Debug", "CONNECT: onCreateView")
         root = inflater.inflate(R.layout.fragment_connection, container, false)
 
-        if (!connected) {
-            connectionStatusText = root.findViewById(R.id.connection_status)
-            connectionHelpText = root.findViewById(R.id.connection_help)
-            measureButtonSetup()
-            connectButtonSetup()
-        }
+        connectionStatusText = root.findViewById(R.id.connection_status)
+        connectionHelpText = root.findViewById(R.id.connection_help)
+        measureButtonSetup()
+        connectButtonSetup()
 
         return root
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        Log.d("Debug", "CONNECT: onSavedInstanceState")
-
-        if (connected) {
-            outState.putBoolean("connected", true)
-        } else {
-            outState.putBoolean("connected", false)
-        }
-    }
-
+    /**
+     * Handles state of connection fragment on resume.
+     */
     override fun onResume() {
-        super.onResume()
-        Log.d("Debug", "CONNECT: Session resumed.")
-
-        if (connected) {
+        if (MainFragment.state == MainFragment.CONNECTED) {
             connectionStatusText.text = "Connected"
             connectionHelpText.text = "Connected to: Unknown Device"
             connectionButton.text = "Change Devices"
             connectionStatusText.setTextColor(Color.parseColor("#4BB543"))
             measureButton.isVisible = true
+        }
+        super.onResume()
+    }
+
+    /**
+     * Sets up the "Connect" button and attaches a listener to it
+     */
+    private fun connectButtonSetup() {
+        connectionButton = root.findViewById(R.id.connection_btn)
+        connectionButton.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+            MainFragment.state = MainFragment.CONNECTED
         }
     }
 
@@ -89,17 +81,7 @@ class ConnectionFragment : Fragment() {
             val transaction = fragmentManager?.beginTransaction()
             transaction?.replace(R.id.fragment_container, MeasurementFragment())
             transaction?.commit()
-        }
-    }
-
-    /**
-     * Sets up the "Connect" button and attaches a listener to it
-     */
-    private fun connectButtonSetup() {
-        connectionButton = root.findViewById(R.id.connection_btn)
-        connectionButton.setOnClickListener {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
-            connected = true
+            MainFragment.state = MainFragment.MEASURE
         }
     }
 }
