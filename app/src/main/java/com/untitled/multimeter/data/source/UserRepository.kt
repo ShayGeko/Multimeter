@@ -193,6 +193,11 @@ class UserRepository : AutoCloseable {
     fun removeExperimentFromUser(objectId: ObjectId) {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
+
+                val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
+                    .build()
+                mRealm = Realm.open(config)
+
                 mRealm.writeBlocking {
 
                     //Get the current users entry

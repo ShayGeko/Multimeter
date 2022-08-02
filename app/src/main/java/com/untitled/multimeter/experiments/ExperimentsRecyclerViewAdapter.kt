@@ -42,11 +42,6 @@ class ExperimentsRecyclerViewAdapter(
         val currentItem = list[position]
 
         Log.e("ExperimentsRecyclerViewAdapter", "id: " +currentItem.id.toString())
-        Log.e("ExperimentsRecyclerViewAdapter", "Title: "+currentItem.title.toString())
-        Log.e("ExperimentsRecyclerViewAdapter", "collaborators: "+currentItem.collaborators.toString())
-        Log.e("ExperimentsRecyclerViewAdapter", "comment: " +currentItem.comment.toString())
-        Log.e("ExperimentsRecyclerViewAdapter", "dateTime: " +currentItem.date.toString())
-        Log.e("ExperimentsRecyclerViewAdapter", "measurements: " +currentItem.measurements.toString())
 
         //Format data into string
         var collaboratorString = ""
