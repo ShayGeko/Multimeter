@@ -3,40 +3,34 @@ package com.untitled.multimeter.data.source
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
+import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.CreateAccountModel
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
-import io.realm.kotlin.mongodb.sync.SyncConfiguration
 import io.realm.kotlin.notifications.InitialObject
-import io.realm.kotlin.notifications.InitialResults
-import io.realm.kotlin.notifications.SingleQueryChange
 import io.realm.kotlin.notifications.UpdatedObject
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 
 /**
  * Repository for users
  *
  */
-class UserRepository : AutoCloseable {
+class UserRepository {
     private lateinit var mRealm : Realm
+    private var isRealmOpen = false
 
     /**
      * Attempts to login the user with the specified email and password
@@ -138,12 +132,8 @@ class UserRepository : AutoCloseable {
      */
     fun addExperimentToUser(experiment: Experiment){
         CoroutineScope(Dispatchers.IO).launch {
-
+            initRealm()
             runCatching {
-                val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
-                    .build()
-                mRealm = Realm.open(config)
-
                 mRealm.writeBlocking {
 
                     //Get the current users entry
@@ -178,7 +168,6 @@ class UserRepository : AutoCloseable {
                     Log.e("UserRepository", exception.message.toString())
                 }
 
-            mRealm.close()
 
             // fancy try-catch block
 
@@ -192,7 +181,9 @@ class UserRepository : AutoCloseable {
      */
     fun removeExperimentFromUser(objectId: ObjectId) {
         CoroutineScope(Dispatchers.IO).launch {
+            initRealm()
             runCatching {
+
                 mRealm.writeBlocking {
 
                     //Get the current users entry
@@ -213,7 +204,6 @@ class UserRepository : AutoCloseable {
                     Log.e("removeExperimentFromUser", "Experiment removal failed")
                     Log.e("removeExperimentFromUser", exception.message.toString())
                 }
-            mRealm.close()
         }
     }
 
@@ -269,7 +259,6 @@ class UserRepository : AutoCloseable {
             .query<UserInfo>("_id == $0", userId)
             .first().find()
             ?: throw RealmObjectNotFoundException("UserInfo for the current user is not found!")
-        // mRealm.close()
 
         return result
     }
@@ -313,20 +302,12 @@ class UserRepository : AutoCloseable {
         initRealm()
 
         mRealm.writeBlocking { this.copyToRealm(userInfo)}
-        mRealm.close()
     }
 
     private fun initRealm(){
-        if(!this::mRealm.isInitialized) {
-            val config = SyncConfiguration
-                .Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
-                .build()
-            mRealm = Realm.open(config)
+        if(!isRealmOpen) {
+            mRealm = getRealmInstance()
+            isRealmOpen = true
         }
-    }
-
-    override fun close() {
-        if(this::mRealm.isInitialized && !mRealm.isClosed())
-            mRealm.close()
     }
 }

@@ -15,6 +15,7 @@ data class Experiment(
 
 package com.untitled.multimeter.data.model
 
+import com.untitled.multimeter.MultimeterApp
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -28,6 +29,7 @@ import java.util.*
 class Experiment() : RealmObject {
     @PrimaryKey
     var _id : ObjectId = ObjectId.create()
+    var _partition : String = MultimeterApp.REALM_PARTITION
 
     var title : String = ""
     var date: Calendar = Calendar.getInstance()

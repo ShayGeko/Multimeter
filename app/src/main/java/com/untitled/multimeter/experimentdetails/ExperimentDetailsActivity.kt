@@ -208,8 +208,8 @@ class ExperimentDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.menu_delete) {
 
-            //viewModel.removeExperimentFromUser(id)
-            //viewModel.deleteExperiment(id)
+            viewModel.removeExperimentFromUser(id)
+            viewModel.deleteExperiment(id)
 
             val intent = Intent(this, MainMenuActivity::class.java)
             startActivity(intent)
