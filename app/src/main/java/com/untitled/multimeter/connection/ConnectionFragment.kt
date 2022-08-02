@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.untitled.multimeter.MainFragment
 import com.untitled.multimeter.R
 import com.untitled.multimeter.mesurement.MeasurementFragment
 
@@ -34,6 +35,7 @@ class ConnectionFragment : Fragment() {
         if (savedInstanceState != null) {
             connected = savedInstanceState.getBoolean("connected")
         }
+        println("Connection status: $connected")
     }
 
     override fun onCreateView(
@@ -44,10 +46,10 @@ class ConnectionFragment : Fragment() {
         root = inflater.inflate(R.layout.fragment_connection, container, false)
 
         if (!connected) {
-//            connectionStatusText = root.findViewById(R.id.connection_status)
-//            connectionHelpText = root.findViewById(R.id.connection_help)
-//            measureButtonSetup()
-//            connectButtonSetup()
+            connectionStatusText = root.findViewById(R.id.connection_status)
+            connectionHelpText = root.findViewById(R.id.connection_help)
+            measureButtonSetup()
+            connectButtonSetup()
         }
 
         return root
@@ -56,6 +58,7 @@ class ConnectionFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d("Debug", "CONNECT: onSavedInstanceState")
+
         if (connected) {
             outState.putBoolean("connected", true)
         } else {
@@ -84,7 +87,7 @@ class ConnectionFragment : Fragment() {
         measureButton.isVisible = false
         measureButton.setOnClickListener {
             val transaction = fragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_main, MeasurementFragment())
+            transaction?.replace(R.id.fragment_container, MeasurementFragment())
             transaction?.commit()
         }
     }

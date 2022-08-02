@@ -45,24 +45,23 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (state == CONNECTION) {
-            val transaction = fragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_main, ConnectionFragment())
-            transaction?.commit()
-        } else if (state == MEASURE) {
-            val transaction = fragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_main, MeasurementFragment())
-            transaction?.commit()
+        when (state) {
+            CONNECTION -> {
+                val transaction = childFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, ConnectionFragment())
+                transaction.commit()
+            }
+            MEASURE -> {
+                val transaction = childFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, MeasurementFragment())
+                transaction.commit()
+            }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d("Debug", "MAIN: onSavedInstanceState")
-        if (state == CONNECTION) {
-            outState.putString("state", CONNECTION)
-        } else if (state == MEASURE) {
-            outState.putString("state", MEASURE)
-        }
+        outState.putString("state", state)
     }
 }
