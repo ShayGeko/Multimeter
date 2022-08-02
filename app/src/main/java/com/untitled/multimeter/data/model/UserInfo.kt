@@ -12,7 +12,7 @@ import io.realm.kotlin.types.annotations.*
 class UserInfo() : RealmObject {
     @PrimaryKey
     var _id : ObjectId = ObjectId.create()
-
+    
     var _partition : String = MultimeterApp.REALM_PARTITION
     var userName : String = ""
     var email : String = ""

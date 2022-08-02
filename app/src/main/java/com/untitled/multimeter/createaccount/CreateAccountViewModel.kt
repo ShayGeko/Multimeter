@@ -20,7 +20,6 @@ class CreateAccountViewModel(private val repository: UserRepository) : ViewModel
      * LiveData of acquired User wrapped in Result class on success,
      * and error wrapped in Result otherwise
      */
-
     fun registerUser(createAccountModel: CreateAccountModel) : LiveData<Result<Unit>> {
         return repository.register(createAccountModel) as MutableLiveData<Result<Unit>>
     }
