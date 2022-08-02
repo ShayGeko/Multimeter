@@ -98,8 +98,7 @@ class CreateExperimentActivity : AppCompatActivity() {
      * Simply redirects to the Experiments Fragment
      */
     private fun cancelFunctions() {
-        val intent = Intent(this, MainMenuActivity::class.java)
-        startActivity(intent)
+        finish()
     }
 
     /**
@@ -125,17 +124,11 @@ class CreateExperimentActivity : AppCompatActivity() {
         viewModel.insertExperiment(newExperiment).observe(this) { result ->
             result.onSuccess {
                 viewModel.addExperimentToUser(newExperiment)
-
-                //Go to Experiments Fragment
-                val intent = Intent(this, MainMenuActivity::class.java)
-                startActivity(intent)
+                finish()
             }
             result.onFailure { error ->
                 Log.e("CreateExperimentActivity", "insertFail")
-
-                //Go to Experiments Fragment
-                val intent = Intent(this, MainMenuActivity::class.java)
-                startActivity(intent)
+                finish()
             }
         }
     }

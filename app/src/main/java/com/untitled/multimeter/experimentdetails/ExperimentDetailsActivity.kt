@@ -238,8 +238,7 @@ class ExperimentDetailsActivity : AppCompatActivity() {
             viewModel.removeExperimentFromUser(id)
             viewModel.deleteExperiment(id)
 
-            val intent = Intent(this, MainMenuActivity::class.java)
-            startActivity(intent)
+            finish()
         }
         return super.onOptionsItemSelected(item)
     }
