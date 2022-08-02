@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.createexperiment.CreateExperimentViewModel
+import com.untitled.multimeter.experimentdetails.ExperimentDetailsViewModel
 import com.untitled.multimeter.experiments.ExperimentViewModel
 import com.untitled.multimeter.invitations.InvitationsViewModel
 import com.untitled.multimeter.login.LoginViewModel
@@ -23,6 +24,8 @@ class UserViewModelFactory(
             return InvitationsViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
         if(modelClass.isAssignableFrom(CreateExperimentViewModel::class.java))
             return CreateExperimentViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
+        if(modelClass.isAssignableFrom(ExperimentDetailsViewModel::class.java))
+            return ExperimentDetailsViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
 
 
         throw IllegalArgumentException("Unknown ViewModel class")

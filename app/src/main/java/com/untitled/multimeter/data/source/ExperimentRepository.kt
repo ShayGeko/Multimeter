@@ -52,7 +52,7 @@ class ExperimentRepository {
                 mRealm.writeBlocking {
 
                     //For each experimentObjectId, get the corresponding experiment
-                    if (userExperimentList != null) {
+                    if (userExperimentList != null && userExperimentList.isNotEmpty()) {
                         for (experimentObjectId in userExperimentList) {
                             val experimentQuery: RealmQuery<Experiment> =
                                 this.query<Experiment>("_id == $0", experimentObjectId)
@@ -149,9 +149,7 @@ class ExperimentRepository {
      */
     fun insertExperiment(experiment: Experiment): LiveData<Result<Boolean>>{
         val result = MutableLiveData<Result<Boolean>> ()
-        Log.e("insertExperiment","Set Data")
         CoroutineScope(Dispatchers.IO).launch {
-            Log.e("insertExperiment","Coroutine")
             runCatching {
                 val configuration = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
                     .build()
@@ -189,6 +187,37 @@ class ExperimentRepository {
         }
         return result
     }
+
+    /**
+     * deletes experiment from the database
+     *
+     * @param experiment - id
+     */
+    fun deleteExperiment(objectId: ObjectId) {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                val configuration = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
+                    .build()
+                mRealm = Realm.open(configuration)
+
+                mRealm.writeBlocking {
+                    val experiment: Experiment = this.query<Experiment>("_id == $0", objectId).find().first()
+                    delete(experiment)
+                }
+
+
+            }
+                .onSuccess {
+                    Log.d("deleteExperiment", "Experiment delete succesful")
+                }
+                .onFailure { exception : Throwable ->
+                    Log.e("deleteExperiment", "Experiment delete failed")
+                    Log.e("deleteExperiment", exception.message.toString())
+                }
+            mRealm.close()
+        }
+    }
+
 
     private fun experimentToExperimentDataClass(experiment: Experiment): ExperimentModel {
         return ExperimentModel(

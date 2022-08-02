@@ -174,6 +174,38 @@ class UserRepository {
     }
 
     /**
+     * Attempts to remove experiment from the user
+     *
+     * @param objectId = ObjectId of the experiment
+     */
+    fun removeExperimentFromUser(objectId: ObjectId) {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                mRealm.writeBlocking {
+
+                    //Get the current users entry
+                    val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+                    val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
+                    val userInfo = userQuery.find()[0]
+
+                    //Add Experiments to the user
+                    val currentExperiments = userInfo.experiments
+                    currentExperiments.remove(objectId)
+                    userInfo.experiments = currentExperiments
+                }
+            }
+                .onSuccess {
+                    Log.d("removeExperimentFromUser", "Experiment removal succesful")
+                }
+                .onFailure { exception : Throwable ->
+                    Log.e("removeExperimentFromUser", "Experiment removal failed")
+                    Log.e("removeExperimentFromUser", exception.message.toString())
+                }
+            mRealm.close()
+        }
+    }
+
+    /**
      * Stores [UserInfo] about just registered user to [Realm
      *
      * @param userInfo information about user to store

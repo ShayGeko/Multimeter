@@ -3,6 +3,7 @@ package com.untitled.multimeter.experimentdetails
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -11,19 +12,30 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.R
+import com.untitled.multimeter.UserViewModelFactory
+import io.realm.kotlin.types.ObjectId
+import kotlinx.coroutines.runBlocking
 
 
 class ExperimentDetailsActivity : AppCompatActivity() {
+    private lateinit var viewModel:ExperimentDetailsViewModel
+    private lateinit var id: ObjectId
     private val colors = arrayListOf(Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.YELLOW, Color.WHITE, Color.GRAY, Color.DKGRAY, Color.BLACK)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.experiment_entry)
+
+        //Initialize Viewmodel
+        val viewModelFactory = UserViewModelFactory(this.application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ExperimentDetailsViewModel::class.java)
 
         val titleView : TextView = findViewById(R.id.experiment_title)
         val collaboratorsView : TextView = findViewById(R.id.experiment_collaborators)
@@ -34,6 +46,7 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         collaboratorsView.text = intent.extras?.getString("collaborators")!!
         dateTimeView.text = intent.extras?.getString("dateTime")!!
         commentView.text = intent.extras?.getString("comment")!!
+        id = ObjectId.Companion.from(intent.extras?.getString("id")!!)
 
         //Get the data
         val dataValues = intent.getBundleExtra("data")!!
@@ -195,10 +208,8 @@ class ExperimentDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.menu_delete) {
 
-            //########################
-            // Remove data from the database
-            // TO DO
-            //########################
+            //viewModel.removeExperimentFromUser(id)
+            //viewModel.deleteExperiment(id)
 
             val intent = Intent(this, MainMenuActivity::class.java)
             startActivity(intent)
