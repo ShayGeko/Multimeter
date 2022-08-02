@@ -2,10 +2,8 @@ package com.untitled.multimeter
 
 import android.app.Application
 import android.util.Log
-import com.untitled.multimeter.data.model.Experiment
-import com.untitled.multimeter.data.model.Measurement
-import com.untitled.multimeter.data.model.MeasurementDataPoint
-import com.untitled.multimeter.data.model.UserInfo
+import com.untitled.multimeter.data.model.*
+import com.untitled.multimeter.data.source.CollaborationInviteRepository
 import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
 import io.realm.kotlin.Realm
@@ -16,6 +14,7 @@ import io.realm.kotlin.mongodb.sync.SyncConfiguration
 class MultimeterApp : Application() {
     val userRepository by lazy {UserRepository()}
     val experimentRepository by lazy { ExperimentRepository() }
+    val collaborationInviteRepository by lazy { CollaborationInviteRepository() }
 
 
     override fun onCreate() {
@@ -37,8 +36,15 @@ class MultimeterApp : Application() {
                 return mRealm
             }
             else{
+                val schema = setOf(
+                    UserInfo::class,
+                    Experiment::class,
+                    Measurement::class,
+                    MeasurementDataPoint::class,
+                    CollaborationInvite::class
+                )
                 val config = SyncConfiguration
-                    .Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class, Experiment::class, Measurement::class, MeasurementDataPoint::class))
+                    .Builder(realmApp.currentUser!!, REALM_PARTITION, schema)
                     .build()
                 mRealm = Realm.open(config)
 

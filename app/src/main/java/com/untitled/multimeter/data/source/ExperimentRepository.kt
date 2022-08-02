@@ -127,12 +127,14 @@ class ExperimentRepository {
     /**
      * Adds experiment to the database
      *
+     * TODO: Fix to use receivers as collaborators in experiment
+     *
      * @param experiment - id
      * @returns
      * LiveData of the given experiment wrapped in Result class on success,
      * and error wrapped in Result otherwise
      */
-    fun insertExperiment(experiment: Experiment): LiveData<Result<Boolean>>{
+    fun insertExperiment(experiment: Experiment, receivers : ArrayList<UserInfo>): LiveData<Result<Boolean>>{
         val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -141,10 +143,12 @@ class ExperimentRepository {
                 //experiment.measurements.add(RealmDataPoint().apply { this.x = 2.0; this.y = 4.3 })
                 //experiment.measurements.add(RealmDataPoint().apply { this.x = 3.0; this.y = 5.0 })
                 //experiment.measurements.add(RealmDataPoint().apply { this.x = 4.0; this.y = 6.2 })
-                //experiment.measurements.add(RealmDataPoint().apply { this.x = 5.0; this.y = 10.0 })
+                //experiment.measurements.add(RealmDataPoint().apply { this.x = 5.0; this.y = 10.0 }
+
 
                 mRealm.writeBlocking {
                     this.copyToRealm(experiment)
+
                 }
                 Log.e("ExperimentRepository", "userInfo _id: "+experiment._id.toString())
                 Log.e("ExperimentRepository", "userInfo title: "+experiment.title.toString())
@@ -168,6 +172,16 @@ class ExperimentRepository {
         return result
     }
 
+    suspend fun insertExperimentAsync(experiment: Experiment, sender: UserInfo, receivers: ArrayList<UserInfo>) {
+        mRealm.write {
+            this.copyToRealm(experiment)
+
+            for(receiver in receivers){
+                copyToRealm(CollaborationInvite(experiment, receiver, sender))
+            }
+
+        }
+    }
     /**
      * deletes experiment from the database
      *

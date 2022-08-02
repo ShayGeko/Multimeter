@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.data.model.*
+import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
@@ -156,31 +158,60 @@ class CreateExperimentActivity : AppCompatActivity() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
         // set title
-        builder.setTitle("Friend List")
+        builder.setTitle("Invite collaborator")
 
-        // set up options
-        builder.setMultiChoiceItems(friendsCharSequence, checkedItems) { dialog, chosenVal, chosen ->
-            if (chosen) {
-                //If chosen, add choice (as an int) to choices
-                collaboratorsChoices.add(chosenVal)
-            } else {
-                //If unchosen, remove the int from list
-                collaboratorsChoices.remove(Integer.valueOf(chosenVal))
-            }
-        }
+
+
+        val editText = EditText(this)
+        editText.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+
+        builder.setView(editText)
+
+//        // set up options
+//        builder.setMultiChoiceItems(friendsCharSequence, checkedItems) { dialog, chosenVal, chosen ->
+//            if (chosen) {
+//                //If chosen, add choice (as an int) to choices
+//                collaboratorsChoices.add(chosenVal)
+//            } else {
+//                //If unchosen, remove the int from list
+//                collaboratorsChoices.remove(Integer.valueOf(chosenVal))
+//            }
+//        }
         //On save, read the choices by the user and add them to the collaborators ArrayList
         builder.setPositiveButton("OK") { dialog, whichButton ->
 
-            //Clear previous choices
-            experimentCollaborators.clear()
+              val receiverEmail = editText.text.toString()
 
-            //Prepare edittext string
+              viewModel.findUser(receiverEmail).observe(this){ result : Result<UserInfo> ->
+                  with(result){
+                      val toast = Toast(this@CreateExperimentActivity)
+                      onSuccess {
+                          viewModel.invitationReceivers.add(it)
+                          toast.setText("Added ${it.userName} to receivers")
+                          dialog.dismiss()
+                      }
+                      onFailure { exception ->
+                          when(exception){
+                              is RealmObjectNotFoundException -> {
+                                  toast.setText("User not found! Try again")
+                              }
+                              else -> {
+                                  toast.setText("Oops! Something went wrong")
+                              }
+                          }
+
+                      }
+                  }
+              }
+//            //Clear previous choices
+//            experimentCollaborators.clear()
+//
+//            //Prepare edittext string
             var collaboratorString = ""
 
-            for (x in collaboratorsChoices) {
-                experimentCollaborators.add(friendsCharSequence[x] as String)
-                collaboratorString += friendsCharSequence[x].toString()
-                if (x != collaboratorsChoices.last()) {
+            for (x in viewModel.invitationReceivers) {
+                collaboratorString += x.userName
+                if (x != viewModel.invitationReceivers.last()) {
                     collaboratorString += ", "
                 }
             }
