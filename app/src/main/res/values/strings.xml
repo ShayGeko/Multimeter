@@ -29,17 +29,12 @@
     <string name="save">save</string>
     <string name="enter_username">Enter Username:</string>
 
-    <!-- Frequency Setting Spinner -->
-    <string-array name="frequencyPreference">
-        <item>30 Hz</item>
-        <item>60 Hz</item>
-        <item>90 Hz</item>
-        <item>120 Hz</item>
-    </string-array>
-    <string-array name="frequencyPreferenceValues">
-        <item>30</item>
-        <item>60</item>
-        <item>90</item>
-        <item>120</item>
-    </string-array>
+
+
+    <!-- Create Experiment -->
+    <string name="title">Title</string>
+    <string name="titleHint">Enter Title</string>
+    <string name="collaborators">Collaborators</string>
+    <string name="collaboratorsHint">Enter Collaborators</string>
+    <string name="currentTime">Current Time</string>
 </resources>

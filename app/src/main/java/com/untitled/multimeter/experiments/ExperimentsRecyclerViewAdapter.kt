@@ -2,23 +2,35 @@ package com.untitled.multimeter.experiments
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.untitled.multimeter.MyData
+import com.jjoe64.graphview.series.DataPoint
+import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.model.ExperimentModel
+import com.untitled.multimeter.data.model.MeasurementDataPoint
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
+import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
+import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for the data type.
+ * Adapter for the list of [Experiment]
  */
-class MyItemRecyclerViewAdapter(
-    private var list: List<MyData> = emptyList<MyData>()
-) : RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder>() {
+class ExperimentsRecyclerViewAdapter(
+    private var list: List<ExperimentModel> = emptyList()
+) : RecyclerView.Adapter<ExperimentsRecyclerViewAdapter.ViewHolder>() {
+    private lateinit var viewModel: ExperimentViewModel
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -69,20 +81,40 @@ class MyItemRecyclerViewAdapter(
         holder.monthView.text = month
         holder.dateView.text = date
         holder.yearView.text = year
-        //Set up onClickListener to navigate to ExperimentEntry
-        val data = Bundle()
-        val dataValues = currentItem.dataValues
-        data.putSerializable("values", dataValues)
 
+        //change all objectIds in measurements to string which is serializable
+        //dataValuesUserNames contains the userName for the user
+        //dataValuesDataPoints contains an ArrayList of ArrayLists of DataPoints
+        val data = Bundle()
+        val dataValues = currentItem.measurements
+        val dataValuesUserNames = ArrayList<String>()
+        val dataValuesDataPoints = ArrayList<ArrayList<DataPoint>>()
+        for (measurement in dataValues) {
+            //TODO: Query for username
+            dataValuesUserNames.add(measurement.user.toString())
+
+            val dataPoints = ArrayList<DataPoint>()
+            for (dataPoint in measurement.dataPoints) {
+                dataPoints.add(DataPoint(dataPoint.x,dataPoint.y))
+            }
+            dataValuesDataPoints.add(dataPoints)
+        }
+        data.putSerializable("users", dataValuesUserNames)
+        data.putSerializable("datapoints", dataValuesDataPoints)
+
+        //Set up onClickListener to navigate to ExperimentEntry
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ExperimentEntry::class.java)
+            val intent = Intent(holder.itemView.context, ExperimentDetailsActivity::class.java)
             intent.putExtra("title", currentItem.title)
             intent.putExtra("collaborators", collaboratorString)
             intent.putExtra("dateTime", dateString)
             intent.putExtra("data", data)
             intent.putExtra("comment", currentItem.comment)
+            intent.putExtra("ReadOnly", 0)
+            intent.putExtra("id",currentItem.id.toString())
             holder.itemView.context.startActivity(intent)
         }
+
     }
 
     override fun getItemCount(): Int = list.size
@@ -99,5 +131,4 @@ class MyItemRecyclerViewAdapter(
             return super.toString()
         }
     }
-
 }

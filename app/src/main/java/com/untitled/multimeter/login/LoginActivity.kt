@@ -8,11 +8,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.untitled.multimeter.MainMenu
+import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
-import com.untitled.multimeter.createAccount.CreateAccountActivity
+import com.untitled.multimeter.createaccount.CreateAccountActivity
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
 
@@ -74,8 +74,10 @@ class LoginActivity : AppCompatActivity() {
             loginBtn.isEnabled = true
 
             // if result is successful, return to the main activity
-            it.onSuccess {
-                startActivity(Intent(application, MainMenu::class.java))
+            it.onSuccess { userInfo ->
+
+                Toast.makeText(this, "Welcome, ${userInfo.userName}", Toast.LENGTH_LONG).show()
+                startActivity(Intent(application, MainMenuActivity::class.java))
                 finish()
             }
             // otherwise, display error to the user

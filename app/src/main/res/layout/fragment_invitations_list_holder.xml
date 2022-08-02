@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list"
-    android:name="com.untitled.multimeter.experiments.Experiments"
+    android:name="com.untitled.multimeter.invitations.Invitations"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
@@ -12,8 +12,8 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:context=".experiments.ExperimentsFragment"
-    tools:listitem="@layout/fragment_experiments">
+    tools:context=".invitations.InvitationsFragment"
+    tools:listitem="@layout/fragment_invitations">
 
 
 </androidx.recyclerview.widget.RecyclerView>

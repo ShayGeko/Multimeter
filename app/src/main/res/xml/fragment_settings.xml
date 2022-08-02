@@ -52,5 +52,5 @@
     <Preference
         android:key="logout"
         android:title="Logout"
-        app:iconSpaceReserved="false"/>
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>
