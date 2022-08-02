@@ -16,4 +16,8 @@ class ExperimentDetailsViewModel(private val userRepository: UserRepository, pri
     fun removeExperimentFromUser(objectId: ObjectId) {
         return userRepository.removeExperimentFromUser(objectId)
     }
+
+    fun getUserName(objectId: ObjectId): LiveData<Result<String>> {
+        return userRepository.getUserName(objectId)
+    }
 }

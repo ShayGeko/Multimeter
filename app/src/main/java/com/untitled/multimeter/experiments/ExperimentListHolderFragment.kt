@@ -43,19 +43,36 @@ class ExperimentListHolderFragment : Fragment() {
                 layoutManager = LinearLayoutManager(context)
                 adapter = ExperimentsRecyclerViewAdapter(dataList)
 
-                //get experiments, on success override adapter, on failure do nothing
-                viewModel.getAllExperimentsForUser().observe(viewLifecycleOwner) { result ->
-                    result.onSuccess {
-                        dataList = result.getOrDefault(ArrayList<ExperimentModel>())
-                        adapter = ExperimentsRecyclerViewAdapter(dataList)
-                        Log.e("gotten dataList", dataList.toString())
-                    }
-                    result.onFailure { error ->
-                        Log.e("gotten dataList", "Error: $error")
-                    }
-                }
+                //get experiments, on success update RecyclerView , on failure do nothing
+                updateRecyclerView()
+
             }
         }
         return view
+    }
+
+    override fun onResume() {
+        //get experiments, on success override adapter, on failure do nothing
+        updateRecyclerView()
+        super.onResume()
+    }
+
+    //get experiments, on success update RecyclerView, on failure do nothing
+    private fun updateRecyclerView() {
+        viewModel.getAllExperimentsForUser().observe(viewLifecycleOwner) { result ->
+            result.onSuccess {
+                dataList = result.getOrDefault(ArrayList<ExperimentModel>())
+                if (this.view != null) {
+                    val experimentsRecyclerView = this.requireView().findViewById<RecyclerView>(R.id.list)
+                    experimentsRecyclerView.adapter = ExperimentsRecyclerViewAdapter(dataList)
+                }
+                else {
+                    Log.e("ExperimentListHolderFragment","view is null")
+                }
+            }
+            result.onFailure { error ->
+                Log.e("ExperimentListHolderFragment", "Error in getAllExperimentsForUser() : $error")
+            }
+        }
     }
 }

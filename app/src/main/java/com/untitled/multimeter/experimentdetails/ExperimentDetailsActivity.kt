@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.generateViewId
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -22,11 +23,15 @@ import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.runBlocking
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 class ExperimentDetailsActivity : AppCompatActivity() {
     private lateinit var viewModel:ExperimentDetailsViewModel
     private lateinit var id: ObjectId
+    private lateinit var validIds: ArrayList<Int>
     private val colors = arrayListOf(Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.YELLOW, Color.WHITE, Color.GRAY, Color.DKGRAY, Color.BLACK)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,13 +53,35 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         commentView.text = intent.extras?.getString("comment")!!
         id = ObjectId.Companion.from(intent.extras?.getString("id")!!)
 
-        //Get the data
+        //The Measurements come in an array of strings, each representing an ObjectId
         val dataValues = intent.getBundleExtra("data")!!
-        val allData: ArrayList<ArrayList<DataPoint>> = dataValues.getSerializable("values") as ArrayList<ArrayList<DataPoint>>
+        val users: ArrayList<String> = dataValues.getSerializable("users") as ArrayList<String>
+        val datapoints: ArrayList<ArrayList<DataPoint>> = dataValues.getSerializable("datapoints") as ArrayList<ArrayList<DataPoint>>
+
+        //Log.e("users", users.toString())
+        //Log.e("datapoints", datapoints.toString())
+
+        //For the users get the usernames to display in the table
+        val usernames: ArrayList<String> = ArrayList<String>()//Collections.nCopies(users.size, ""))
+        validIds = ArrayList()
+        for (index in 0 until users.size) {
+            validIds.add(generateViewId())
+            viewModel.getUserName(ObjectId.Companion.from(users[index])).observe(this) { result ->
+                result.onSuccess {
+                    usernames.add(result.getOrElse { "" })
+
+                    //When all usernames are gotten, display the table
+                    if (usernames.size == users.size) { displayDataInTheTable(datapoints, usernames) }
+                }
+                result.onFailure { error ->
+                    Log.e("ExperimentDetaillsActivity", "Error getting userName")
+                    throw error
+                }
+            }
+        }
 
         // display the data
-        displayDataOnGraph(allData)
-        displayDataInTheTable(allData)
+        displayDataOnGraph(datapoints)
     }
 
     /**
@@ -97,11 +124,11 @@ class ExperimentDetailsActivity : AppCompatActivity() {
      *
      * @param allData data to be displayed
      */
-    private fun displayDataInTheTable(allData : ArrayList<ArrayList<DataPoint>>){
+    private fun displayDataInTheTable(allData : ArrayList<ArrayList<DataPoint>>, usernames: ArrayList<String>){
         //Add entries to table
         val tableLayoutView = findViewById<TableLayout>(R.id.table_layout)
 
-        displayTableHeader(tableLayoutView, allData.size)
+        displayTableHeader(tableLayoutView, usernames, usernames.size-1)
         displayTableRows(tableLayoutView, allData)
     }
 
@@ -111,16 +138,16 @@ class ExperimentDetailsActivity : AppCompatActivity() {
      * @param tableLayoutView table to add the header to
      * @param numSeries number of series to add the columns for
      */
-    private fun displayTableHeader(tableLayoutView : TableLayout, numSeries: Int){
+    private fun displayTableHeader(tableLayoutView : TableLayout,usernames: ArrayList<String>, numSeries: Int){
         //header row
         val row = TableRow(this)
         val timeHeader = TextView(this)
         timeHeader.text = "time"
         timeHeader.gravity = Gravity.CENTER
         row.addView(timeHeader)
-        for (i in 1..numSeries) {
+        for (i in 0..numSeries) {
             val text = TextView(this)
-            text.text = "series "+i.toString()
+            text.text = usernames[i]
             text.gravity = Gravity.CENTER
             row.addView(text)
         }
@@ -211,8 +238,7 @@ class ExperimentDetailsActivity : AppCompatActivity() {
             viewModel.removeExperimentFromUser(id)
             viewModel.deleteExperiment(id)
 
-            val intent = Intent(this, MainMenuActivity::class.java)
-            startActivity(intent)
+            finish()
         }
         return super.onOptionsItemSelected(item)
     }

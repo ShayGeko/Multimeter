@@ -16,6 +16,7 @@ data class Experiment(
 package com.untitled.multimeter.data.model
 
 import com.untitled.multimeter.MultimeterApp
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -35,5 +36,5 @@ class Experiment() : RealmObject {
     var date: Calendar = Calendar.getInstance()
     var collaborators : RealmList<String> = RealmListString(ArrayList<String>())
     var comment : String = ""
-    var measurements: RealmList<ObjectId> = RealmListObjectId(ArrayList<ObjectId>())
+    var measurements: RealmList<Measurement> = realmListOf()
 }
