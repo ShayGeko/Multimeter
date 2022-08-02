@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Frequency Setting Spinner -->
+    <string-array name="frequencyPreference">
+        <item>30 Hz</item>
+        <item>60 Hz</item>
+        <item>90 Hz</item>
+        <item>120 Hz</item>
+    </string-array>
+    <string-array name="frequencyPreferenceValues">
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+    </string-array>
+
+</resources>
