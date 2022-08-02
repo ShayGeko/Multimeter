@@ -1,11 +1,14 @@
 package com.untitled.multimeter.data.source
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.CreateAccountModel
+import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
@@ -33,7 +36,7 @@ import kotlinx.coroutines.launch
  *
  */
 class UserRepository : AutoCloseable {
-    lateinit var mRealm : Realm
+    private lateinit var mRealm : Realm
 
     /**
      * Attempts to login the user with the specified email and password
@@ -69,6 +72,7 @@ class UserRepository : AutoCloseable {
 
         return loginResult
     }
+
     /**
      * Attempts to register the user with the specified email and password
      *
@@ -113,6 +117,108 @@ class UserRepository : AutoCloseable {
     }
 
     /**
+     * get the invitation for the current user
+     *
+     * @param user - User
+     * @returns
+     * LiveData of the invitations for the user
+     */
+    fun getInvitations(user: User) : LiveData<Result<Unit>> {
+        val registerResult = MutableLiveData<Result<Unit>> ()
+        //query database
+        return registerResult
+    }
+
+    /**
+     * Attempts to add experiment to the user
+     *
+     * @param experiment - Experiment
+     * @returns
+     * LiveData of the invitations for the user
+     */
+    fun addExperimentToUser(experiment: Experiment){
+        CoroutineScope(Dispatchers.IO).launch {
+
+            runCatching {
+                val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(UserInfo::class))
+                    .build()
+                mRealm = Realm.open(config)
+
+                mRealm.writeBlocking {
+
+                    //Get the current users entry
+                    val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+                    val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
+                    val userInfo = userQuery.find()[0]
+                    Log.e("UserRepository", "userInfo _id: "+userInfo._id.toString())
+                    Log.e("UserRepository", "userInfo username: "+userInfo.userName.toString())
+                    Log.e("UserRepository", "userInfo email: "+userInfo.email.toString())
+                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())
+
+                    //Add Experiments to the user
+                    val currentExperiments = userInfo.experiments
+                    currentExperiments.add(experiment._id)
+                    userInfo.experiments = currentExperiments
+
+                    Log.e("UserRepository", "userInfo -> AFTER APPLY")
+                    Log.e("UserRepository", "userInfo _id: "+userInfo._id.toString())
+                    Log.e("UserRepository", "userInfo username: "+userInfo.userName.toString())
+                    Log.e("UserRepository", "userInfo email: "+userInfo.email.toString())
+                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())
+
+                    return@writeBlocking userInfo
+                }
+            } // if no exception was thrown, propagate the successful Result
+                .onSuccess { userInfo ->
+                    Log.d("UserRepository", "Experiment add succesful")
+                    Log.d("UserRepository", "new experiments: ${userInfo!!.experiments.toString()}")
+                } // otherwise, propagate the failed result
+                .onFailure { exception : Throwable ->
+                    Log.e("UserRepository", "Experiment add failed")
+                    Log.e("UserRepository", exception.message.toString())
+                }
+
+            mRealm.close()
+
+            // fancy try-catch block
+
+        }
+    }
+
+    /**
+     * Attempts to remove experiment from the user
+     *
+     * @param objectId = ObjectId of the experiment
+     */
+    fun removeExperimentFromUser(objectId: ObjectId) {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                mRealm.writeBlocking {
+
+                    //Get the current users entry
+                    val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+                    val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
+                    val userInfo = userQuery.find()[0]
+
+                    //Add Experiments to the user
+                    val currentExperiments = userInfo.experiments
+                    currentExperiments.remove(objectId)
+                    userInfo.experiments = currentExperiments
+                }
+            }
+                .onSuccess {
+                    Log.d("removeExperimentFromUser", "Experiment removal succesful")
+                }
+                .onFailure { exception : Throwable ->
+                    Log.e("removeExperimentFromUser", "Experiment removal failed")
+                    Log.e("removeExperimentFromUser", exception.message.toString())
+                }
+            mRealm.close()
+        }
+    }
+
+    /**
+     * Stores [UserInfo] about just registered user to [Realm
      * **Should only be called if the user is logged in**
      *
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
