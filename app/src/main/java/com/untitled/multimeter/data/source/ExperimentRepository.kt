@@ -5,12 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
+import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.model.ExperimentModel
-import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.mongodb.sync.SyncConfiguration
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +22,7 @@ import kotlin.collections.ArrayList
  *
  */
 class ExperimentRepository {
-    private lateinit var mRealm : Realm
-
+    private val mRealm = getRealmInstance()
     /**
      * Tries to pull all experiments for the current user
      *
@@ -39,11 +37,6 @@ class ExperimentRepository {
             //Call private funtion to get the list of experiments for this user
             val userExperimentList = getAllExperimentObjectIdsForUser()
             Log.e("ExperimentRepository", "getAllExperimentObjectIdsForUser()" + userExperimentList.toString())
-
-            //Set up realm config for query
-            val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
-                .build()
-            mRealm = Realm.open(config)
 
             //Query for experiments that match with the ObjectIds in userExperimentList, add to userExperiments
             val userExperiments = ArrayList<ExperimentModel>()
@@ -67,7 +60,6 @@ class ExperimentRepository {
             }.onFailure { exception: Throwable ->
                 result.postValue(Result.failure(exception))
             }
-            mRealm.close()
         }
         return result
     }
@@ -82,10 +74,6 @@ class ExperimentRepository {
     private fun getAllExperimentObjectIdsForUser() :  ArrayList<ObjectId>?  {
         var userExperimentList: ArrayList<ObjectId> = ArrayList()
         runCatching {
-            val config = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(
-                UserInfo::class))
-                .build()
-            mRealm = Realm.open(config)
             val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
 
             //Get the current users entry
@@ -128,9 +116,6 @@ class ExperimentRepository {
         CoroutineScope(Dispatchers.IO).launch {
             Log.e("getExperiment", "Coroutine")
             runCatching {
-                val configuration = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
-                    .build()
-                mRealm = Realm.open(configuration)
                 val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("experimentId == $0", experimentId)
                 val x = experimentList.first()
                 Log.e("getExperiment", x.toString())
@@ -151,10 +136,6 @@ class ExperimentRepository {
         val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                val configuration = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
-                    .build()
-                mRealm = Realm.open(configuration)
-
                 //Add Dummy Measurements
                 //experiment.measurements.add(RealmDataPoint().apply { this.x = 1.0; this.y = 6.2 })
                 //experiment.measurements.add(RealmDataPoint().apply { this.x = 2.0; this.y = 4.3 })
@@ -183,7 +164,6 @@ class ExperimentRepository {
                     Log.e("insertExperiment", exception.message.toString())
                     result.postValue(Result.failure(exception))
                 }
-            mRealm.close()
         }
         return result
     }
@@ -196,16 +176,10 @@ class ExperimentRepository {
     fun deleteExperiment(objectId: ObjectId) {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                val configuration = SyncConfiguration.Builder(realmApp.currentUser!!, REALM_PARTITION, schema = setOf(Experiment::class))
-                    .build()
-                mRealm = Realm.open(configuration)
-
                 mRealm.writeBlocking {
                     val experiment: Experiment = this.query<Experiment>("_id == $0", objectId).find().first()
                     delete(experiment)
                 }
-
-
             }
                 .onSuccess {
                     Log.d("deleteExperiment", "Experiment delete succesful")
@@ -214,7 +188,6 @@ class ExperimentRepository {
                     Log.e("deleteExperiment", "Experiment delete failed")
                     Log.e("deleteExperiment", exception.message.toString())
                 }
-            mRealm.close()
         }
     }
 
