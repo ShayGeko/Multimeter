@@ -15,10 +15,8 @@ import kotlin.collections.ArrayList
 /**
  * Measurement Info
  */
-class Measurement() : RealmObject {
-    @PrimaryKey
-    var _id : ObjectId = ObjectId.create()
+class MeasurementDataPoint() : RealmObject {
 
-    var user: ObjectId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
-    var dataPoints: RealmList<MeasurementDataPoint> = realmListOf()
+    var xValues: Double = 0.0
+    var yValues: Double = 0.0
 }

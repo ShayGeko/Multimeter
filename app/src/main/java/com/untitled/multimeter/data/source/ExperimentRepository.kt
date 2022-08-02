@@ -54,10 +54,15 @@ class ExperimentRepository {
                     //For each experimentObjectId, get the corresponding experiment
                     if (userExperimentList != null && userExperimentList.isNotEmpty()) {
                         for (experimentObjectId in userExperimentList) {
-                            val experimentQuery: RealmQuery<Experiment> =
-                                this.query<Experiment>("_id == $0", experimentObjectId)
-                            val experimentInfo = experimentQuery.find()[0]
-                            userExperiments.add(experimentToExperimentDataClass(experimentInfo))
+                            val experimentQuery: RealmQuery<Experiment> = this.query<Experiment>("_id == $0", experimentObjectId)
+                            val queryResult = experimentQuery.find()
+                            if (queryResult.isNotEmpty()) {
+                                val experimentInfo = queryResult[0]
+                                userExperiments.add(experimentToExperimentDataClass(experimentInfo))
+                            }
+                            else {
+                                Log.e("ExperimentRepository", "ObjectId "+experimentObjectId+" does not exist")
+                            }
                         }
                     }
                     Log.e("ExperimentRepository", "userExperiments :" + userExperiments.toString())
@@ -100,14 +105,9 @@ class ExperimentRepository {
             }
             return userExperimentList
 
-        } // if no exception was thrown, propagate the successful Result
-            .onSuccess { userExperimentList ->
-                Log.d("getAllExperimentObjectIdsForUser", "Getting Experiments successful")
-                Log.d("getAllExperimentObjectIdsForUser", "experiments: ${userExperimentList.toString()}")
-                return userExperimentList
-            } // otherwise, propagate the failed result
+        }
             .onFailure { exception : Throwable ->
-                Log.e("getAllExperimentObjectIdsForUser", "Experiment add failed")
+                Log.e("getAllExperimentObjectIdsForUser", "Experiments get for user failed")
                 Log.e("getAllExperimentObjectIdsForUser", exception.message.toString())
                 return null
             }
