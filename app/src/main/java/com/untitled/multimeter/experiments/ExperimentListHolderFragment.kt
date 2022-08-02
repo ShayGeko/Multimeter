@@ -48,7 +48,7 @@ class ExperimentListHolderFragment : Fragment() {
                     result.onSuccess {
                         dataList = result.getOrDefault(ArrayList<ExperimentModel>())
                         adapter = ExperimentsRecyclerViewAdapter(dataList)
-                        Log.e("gotten dataList", dataList.toString())
+                        //Log.e("gotten dataList", dataList.toString())
                     }
                     result.onFailure { error ->
                         Log.e("gotten dataList", "Error: $error")

@@ -13,6 +13,7 @@ import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.data.model.*
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
@@ -117,14 +118,12 @@ class CreateExperimentActivity : AppCompatActivity() {
             this.date = Calendar.getInstance()
             this.collaborators = RealmListString(experimentCollaborators)
             this.comment = ""
-            this.measurements = RealmListObjectId(ArrayList<ObjectId>())
+            this.measurements = realmListOf<Measurement>()
         }
 
         //Insert into database
-        Log.e("CreateExperimentActivity","Start Insert Into Database And add to user")
         viewModel.insertExperiment(newExperiment).observe(this) { result ->
             result.onSuccess {
-                Log.e("CreateExperimentActivity", "insertSuccess, Starting add to user")
                 viewModel.addExperimentToUser(newExperiment)
 
                 //Go to Experiments Fragment

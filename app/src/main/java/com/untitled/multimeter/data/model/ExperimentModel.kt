@@ -10,4 +10,9 @@ data class ExperimentModel(
     val date: Calendar,
     val comment: String,
     val collaborators: ArrayList<String>,
-    var measurements: ArrayList<ObjectId>)
+    var measurements: ArrayList<MeasurementModel>) {
+
+    override fun toString(): String {
+        return "id: "+id+", title: "+title+", comment: "+comment+", collaborators: "+collaborators.toString()+", measurements: "+measurements.toString()
+    }
+}
