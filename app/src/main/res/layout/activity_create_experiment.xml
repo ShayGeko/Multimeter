@@ -14,7 +14,6 @@
             android:text="@string/currentTime"
             android:gravity="center"
             android:textSize="30sp"
-            android:textColor="@color/black"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"/>
         <View
