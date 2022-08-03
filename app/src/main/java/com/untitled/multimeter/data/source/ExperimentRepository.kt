@@ -193,6 +193,32 @@ class ExperimentRepository {
         }
     }
 
+    /**
+     * appends measurement to experiments measurements realmList array
+     *
+     * @param measurement - Measurement to be added
+     * @param experiment - Experiment to be added to
+     *
+     * @return
+     * returns a LiveData<Result<Boolean>> where Boolean is true if success
+     */
+    fun addMeasurementToExperiment(measurement: Measurement, experiment: Experiment): LiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>> ()
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                mRealm.writeBlocking {
+
+                    experiment.measurements.add(measurement)
+                }
+            }.onSuccess {
+                result.postValue(Result.success(true))
+            }.onFailure { exception: Throwable ->
+                result.postValue(Result.failure(exception))
+            }
+        }
+        return result
+    }
+
 
     private fun experimentToExperimentDataClass(experiment: Experiment): ExperimentModel {
         val measurements: ArrayList<MeasurementModel> = ArrayList()

@@ -2,6 +2,7 @@ package com.untitled.multimeter.mesurement
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,17 @@ import android.view.ViewGroup
 import android.widget.*
 import com.untitled.multimeter.R
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import java.util.ArrayList
+import com.untitled.multimeter.MultimeterApp
+import com.untitled.multimeter.data.model.*
+import com.untitled.multimeter.experiments.ExperimentsRecyclerViewAdapter
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.ObjectId
+import io.realm.kotlin.types.RealmList
+import java.util.*
 
 
 /**
@@ -68,6 +76,21 @@ class MeasurementFragment : Fragment() {
             }
         }
 
+        //Button Adds Dummy Data To A Preset Experiment
+        //There should be a screen or something to pick a specific Experiment which would be used as input in this function
+        //For now the experiment to add to is hardcoded for testing
+
+        val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
+        addMeasurementButton.setOnClickListener {
+            val newMeasurement = Measurement().apply {
+                this._id = ObjectId.create()
+                this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+                this.dataPoints = realmListOf()
+            }
+            //viewModel.addMeasurementToExperiment(newMeasurement, )
+        }
+
+
         return t
     }
 
@@ -102,5 +125,38 @@ class MeasurementFragment : Fragment() {
         ))
         lineGraphView.animate()
         lineGraphView.addSeries(series)
+    }
+
+    /**
+     * Created mock data for testing adding a measurement to an experiment
+     */
+    private fun measurementsDummyData(): RealmList<Measurement> {
+        //TODO: delete this
+        var result: RealmList<Measurement> = realmListOf()
+        var dummyMeasurementDataPoint = realmListOf<MeasurementDataPoint>()
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 1.0; this.y = 6.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 2.0; this.y = 4.3 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 3.0; this.y = 5.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 4.0; this.y = 6.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 5.0; this.y = 10.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 6.0; this.y = 3.0 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 7.0; this.y = 9.4 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 8.0; this.y = 3.6 })
+        var dummyMeasurement1 = Measurement().apply {
+            this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+            this.dataPoints = dummyMeasurementDataPoint
+        }
+        dummyMeasurementDataPoint = realmListOf<MeasurementDataPoint>()
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 6.0; this.y = 4.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 2.0; this.y = 5.3 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 4.0; this.y = 1.2 })
+        dummyMeasurementDataPoint.add(MeasurementDataPoint().apply { this.x = 5.0; this.y = 4.0 })
+        var dummyMeasurement2 = Measurement().apply {
+            this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+            this.dataPoints = dummyMeasurementDataPoint
+        }
+        result.add(dummyMeasurement1)
+        result.add(dummyMeasurement2)
+        return result
     }
 }

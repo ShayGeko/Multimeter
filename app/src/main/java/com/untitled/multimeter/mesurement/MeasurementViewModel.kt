@@ -1,10 +1,17 @@
 package com.untitled.multimeter.mesurement
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.jjoe64.graphview.series.DataPoint
+import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.model.Measurement
+import com.untitled.multimeter.data.model.MeasurementModel
+import com.untitled.multimeter.data.source.ExperimentRepository
+import com.untitled.multimeter.data.source.UserRepository
 import kotlinx.coroutines.*
 
-class MeasurementViewModel() : ViewModel() {
+class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
     val measurementInput = MutableLiveData<Float>()
     val collectionStatus = MutableLiveData(false)
 
@@ -44,4 +51,18 @@ class MeasurementViewModel() : ViewModel() {
         connection.cancel()
         isConnectionOn = false;
     }
+
+    /**
+     * For adding a measurement to an experiment
+     *
+     * @param dataPoints - An ArrayList of DataPoints
+     *
+     * @return
+     * LiveData<Result<Boolean>>, where Boolean is true if success
+     */
+    fun addMeasurementToExperiment(measurement: Measurement, experiment: Experiment): LiveData<Result<Boolean>> {
+        return experimentRepository.addMeasurementToExperiment(measurement, experiment)
+    }
+
+
 }
