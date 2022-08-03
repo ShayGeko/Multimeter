@@ -69,7 +69,7 @@ class CreateExperimentViewModel(
      * @returns
      *
      */
-    fun addExperimentToUser(experiment: Experiment) {
+    fun addExperimentToUser(experiment: Experiment): LiveData<Result<Boolean>> {
         return userRepository.addExperimentToUser(experiment)
     }
 
