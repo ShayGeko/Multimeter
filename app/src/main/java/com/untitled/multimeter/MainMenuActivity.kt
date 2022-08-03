@@ -3,13 +3,10 @@ package com.untitled.multimeter
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.untitled.multimeter.connection.ConnectionFragment
-import com.untitled.multimeter.empty.Empty
 import com.untitled.multimeter.experiments.ExperimentsFragment
 import com.untitled.multimeter.invitations.InvitationsFragment
 import com.untitled.multimeter.login.LoginActivity
@@ -44,16 +41,16 @@ class MainMenuActivity : AppCompatActivity() {
         //Create TabLayoutMediator (link tabs and viewpager for navigation)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             if(position == 0) {
-                tab.text="Experiments"
+                tab.setIcon(R.drawable.ic_experiments)
             }
             if(position == 1) {
-                tab.text="Measure"
+                tab.setIcon(R.drawable.ic_measure)
             }
             if(position == 2) {
-                tab.text="Invites"
+                tab.setIcon(R.drawable.ic_invite)
             }
             if(position == 3) {
-                tab.text="Settings"
+                tab.setIcon(R.drawable.ic_settings)
             }
         }.attach()
     }

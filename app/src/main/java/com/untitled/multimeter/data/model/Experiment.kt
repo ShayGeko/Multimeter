@@ -18,6 +18,7 @@ package com.untitled.multimeter.data.model
 import com.untitled.multimeter.MultimeterApp
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.ObjectId
+import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -33,7 +34,7 @@ class Experiment() : RealmObject {
     var _partition : String = MultimeterApp.REALM_PARTITION
 
     var title : String = ""
-    var date: Calendar = Calendar.getInstance()
+    var date: RealmInstant = RealmInstant.from(0,0)
     var collaborators : RealmList<String> = RealmListString(ArrayList<String>())
     var comment : String = ""
     var measurements: RealmList<Measurement> = realmListOf()
