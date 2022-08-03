@@ -21,7 +21,7 @@ class UserViewModelFactory(
         if(modelClass.isAssignableFrom(ExperimentViewModel::class.java))
             return ExperimentViewModel((application as MultimeterApp).experimentRepository) as T
         if(modelClass.isAssignableFrom(InvitationsViewModel::class.java))
-            return InvitationsViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
+            return InvitationsViewModel((application as MultimeterApp).userRepository, application.experimentRepository, application.collaborationInviteRepository) as T
         if(modelClass.isAssignableFrom(CreateExperimentViewModel::class.java))
             return CreateExperimentViewModel((application as MultimeterApp).userRepository, application.experimentRepository, application.collaborationInviteRepository) as T
         if(modelClass.isAssignableFrom(ExperimentDetailsViewModel::class.java))
