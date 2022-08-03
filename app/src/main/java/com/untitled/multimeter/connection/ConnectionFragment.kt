@@ -1,7 +1,12 @@
 package com.untitled.multimeter.connection
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -10,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.untitled.multimeter.MainFragment
@@ -26,6 +33,7 @@ class ConnectionFragment : Fragment() {
     private lateinit var connectionHelpText: TextView
     private lateinit var connectionButton: Button
     private lateinit var measureButton: Button
+    private val PERMISSION_REQUEST_CODE = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +50,7 @@ class ConnectionFragment : Fragment() {
         connectionHelpText = root.findViewById(R.id.connection_help)
         measureButtonSetup()
         connectButtonSetup()
+        checkLocationPermissions()
 
         return root
     }
@@ -51,9 +60,14 @@ class ConnectionFragment : Fragment() {
      */
     override fun onResume() {
         if (MainFragment.state == MainFragment.CONNECTED) {
+
+            // Get SSID from Connected Network
+            val ssid = getSSID()
+            val connectionUpdate = "Connected to: $ssid"
             connectionStatusText.text = "Connected"
-            connectionHelpText.text = "Connected to: Unknown Device"
+            connectionHelpText.text = connectionUpdate
             connectionButton.text = "Change Devices"
+            connectionButton.setBackgroundColor(Color.GRAY)
             connectionStatusText.setTextColor(Color.parseColor("#4BB543"))
             measureButton.isVisible = true
         }
@@ -82,6 +96,20 @@ class ConnectionFragment : Fragment() {
             transaction?.replace(R.id.fragment_container, MeasurementFragment())
             transaction?.commit()
             MainFragment.state = MainFragment.MEASURE
+        }
+    }
+
+    private fun getSSID(): String {
+        val manager = requireActivity().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val info = manager.connectionInfo
+        return info.ssid
+    }
+
+    private fun checkLocationPermissions() {
+        val context = requireActivity().applicationContext
+        if (Build.VERSION.SDK_INT < 23) return
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
         }
     }
 }
