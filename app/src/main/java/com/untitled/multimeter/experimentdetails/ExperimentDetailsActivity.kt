@@ -75,9 +75,14 @@ class ExperimentDetailsActivity : AppCompatActivity() {
                 //Format Title
                 var titleString = "Title: " + experiment.title
 
+                //Get RealmInstant and convert to a Calendar Object
+                val realmInstantDate = experiment.date
+                val foundDate = Date(realmInstantDate.epochSeconds * 1000)
+                val currentDate: Calendar = Calendar.getInstance()
+                currentDate.time = foundDate
+
                 //Format Date
                 var dateString = ""
-                val currentDate = experiment.date
                 val time = currentDate[Calendar.HOUR_OF_DAY].toString() +":"+ currentDate[Calendar.MINUTE] +":"+ currentDate[Calendar.SECOND]
                 val month = DateFormatSymbols().months[currentDate.get(Calendar.MONTH)]
                 var date = ""

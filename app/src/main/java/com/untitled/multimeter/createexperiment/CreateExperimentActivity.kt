@@ -1,6 +1,7 @@
 package com.untitled.multimeter.createexperiment
 
 import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
@@ -13,7 +14,11 @@ import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmInstant
+import io.realm.kotlin.types.RealmList
 import java.text.DateFormatSymbols
+import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -91,15 +96,20 @@ class CreateExperimentActivity : AppCompatActivity() {
      */
     private fun saveFunctions() {
 
-        Log.d(MultimeterApp.APPLICATION_TAG, "saving the experiment")
         //Get input from edit text
         val title = titleEditText.text.toString()
-        val dateTime = Calendar.getInstance()
 
         //Create New Experiment Entry
         val newExperiment = Experiment().apply {
             this.title = title
-            this.date = Calendar.getInstance()
+            this.date =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    RealmInstant.from(Instant.now().epochSecond,Instant.now().nano)
+                }
+                else {
+                    Log.e("CreateExperimentActivity","Warning: Build.VERSION.SDK_INT < 26. Defaulting Time to epochSeconds 0")
+                    RealmInstant.from(0,0)
+                }
             this.collaborators = RealmListString(experimentCollaborators)
             this.comment = ""
             this.measurements = realmListOf()
@@ -229,5 +239,15 @@ class CreateExperimentActivity : AppCompatActivity() {
     override fun onStop() {
         dateTimeTimer.cancel()
         super.onStop()
+    }
+
+    private fun getDateTime(s: String): String? {
+        try {
+            val sdf = SimpleDateFormat("MM/dd/yyyy")
+            val netDate = Date(s.toLong() * 1000)
+            return sdf.format(netDate)
+        } catch (e: Exception) {
+            return e.toString()
+        }
     }
 }
