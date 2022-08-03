@@ -289,7 +289,7 @@ class UserRepository {
      *  *Runs on the caller's thread/coroutine*
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
      */
-    suspend fun getCurrentUserInfoBlocking() : UserInfo{
+     fun getCurrentUserInfoBlocking() : UserInfo{
         initRealm()
 
         // find first userInfo matching user's id, throw an exception if none was found

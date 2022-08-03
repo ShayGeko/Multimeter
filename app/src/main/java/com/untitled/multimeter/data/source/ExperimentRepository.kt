@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jjoe64.graphview.series.DataPoint
 import com.untitled.multimeter.MultimeterApp
+import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
@@ -175,10 +176,16 @@ class ExperimentRepository {
 
     suspend fun insertExperimentAsync(experiment: Experiment, sender: UserInfo, receivers: ArrayList<UserInfo>) {
         mRealm.write {
-            this.copyToRealm(experiment)
+            Log.d(APPLICATION_TAG, "copying experiment to realm")
+            var managedExperiment = copyToRealm(experiment)
 
+
+            var cnt = 1
             for(receiver in receivers){
-                copyToRealm(CollaborationInvite(experiment, receiver, sender))
+                Log.d(APPLICATION_TAG, "creating invitation #$cnt")
+                val invite = CollaborationInvite(findLatest(managedExperiment)!!, findLatest(receiver)!!, findLatest(sender)!!)
+                Log.d(APPLICATION_TAG, "storing invitation #$cnt")
+                this.copyToRealm(invite)
             }
 
         }

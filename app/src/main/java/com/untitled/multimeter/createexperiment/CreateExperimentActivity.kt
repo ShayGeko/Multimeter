@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MainMenuActivity
+import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.createaccount.CreateAccountViewModel
@@ -108,13 +109,13 @@ class CreateExperimentActivity : AppCompatActivity() {
      */
     private fun saveFunctions() {
 
+        Log.d(MultimeterApp.APPLICATION_TAG, "saving the experiment")
         //Get input from edit text
         val title = titleEditText.text.toString()
         val dateTime = Calendar.getInstance()
 
         //Create New Experiment Entry
         val newExperiment = Experiment().apply {
-            this._id = ObjectId.create()
             this.title = title
             this.date = Calendar.getInstance()
             this.collaborators = RealmListString(experimentCollaborators)
@@ -176,10 +177,11 @@ class CreateExperimentActivity : AppCompatActivity() {
 
               viewModel.findUser(receiverEmail).observe(this){ result : Result<UserInfo> ->
                   with(result){
-                      val toast = Toast(this@CreateExperimentActivity)
+                      val toast = Toast.makeText(this@CreateExperimentActivity,"", Toast.LENGTH_LONG)
                       onSuccess {
                           viewModel.invitationReceivers.add(it)
                           toast.setText("Added ${it.userName} to receivers")
+                          toast.show()
                           dialog.dismiss()
                       }
                       onFailure { exception ->
@@ -191,6 +193,7 @@ class CreateExperimentActivity : AppCompatActivity() {
                                   toast.setText("Oops! Something went wrong")
                               }
                           }
+                          toast.show()
 
                       }
                   }

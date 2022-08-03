@@ -14,7 +14,7 @@ class CollaborationInvite() : RealmObject {
     @PrimaryKey
     var _id : ObjectId = ObjectId.create()
 
-    lateinit var experiment : Experiment
-    lateinit var receiver : UserInfo
-    lateinit var sender : UserInfo
+    var experiment : Experiment? = null
+    var receiver : UserInfo? = null
+    var sender : UserInfo? = null
 }
