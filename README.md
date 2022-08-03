@@ -36,4 +36,4 @@
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/Threaded%20Design%20Diagram.drawio.png)
 
 ### .apk file
-[download.apk file](https://github.com/ShayGeko/multimeter-githubpage/releases/download/show_and_tell_1_public/show_and_tell_1.apk)
+[download.apk file](https://github.com/ShayGeko/multimeter-githubpage/releases/download/show_and_tell_2_public/app-debug.apk)
