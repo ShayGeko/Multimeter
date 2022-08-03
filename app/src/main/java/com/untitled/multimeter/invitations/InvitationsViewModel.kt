@@ -5,12 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.UserInfo
+import com.untitled.multimeter.data.source.CollaborationInviteRepository
 import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
 import io.realm.kotlin.mongodb.User
 import io.realm.kotlin.types.ObjectId
 
-class InvitationsViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
+class InvitationsViewModel(
+    private val userRepository: UserRepository,
+    private val experimentRepository: ExperimentRepository,
+    private val collaborationInviteRepository: CollaborationInviteRepository
+) : ViewModel() {
 
     /**
      * Attempts to register the user with the specified email and password
@@ -19,8 +24,8 @@ class InvitationsViewModel(private val userRepository: UserRepository, private v
      * @returns
      * LiveData of the invitations for the user
      */
-    fun getInvitations(user: User) : LiveData<Result<Unit>> {
-        return userRepository.getInvitations(user) as MutableLiveData<Result<Unit>>
+    fun getInvitations() : LiveData<Result<Unit>> {
+        return userRepository.getInvitations() as MutableLiveData<Result<Unit>>
     }
 
     /**

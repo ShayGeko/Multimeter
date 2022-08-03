@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jjoe64.graphview.series.DataPoint
 import com.untitled.multimeter.MultimeterApp
+import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
 import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
@@ -128,12 +129,14 @@ class ExperimentRepository {
     /**
      * Adds experiment to the database
      *
+     * TODO: Fix to use receivers as collaborators in experiment
+     *
      * @param experiment - id
      * @returns
      * LiveData of the given experiment wrapped in Result class on success,
      * and error wrapped in Result otherwise
      */
-    fun insertExperiment(experiment: Experiment): LiveData<Result<Boolean>>{
+    fun insertExperiment(experiment: Experiment, receivers : ArrayList<UserInfo>): LiveData<Result<Boolean>>{
         val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -144,6 +147,7 @@ class ExperimentRepository {
                     experiment.measurements = measurementsDummyData()
 
                     this.copyToRealm(experiment)
+
                 }
 
                 //Logs inserted experiments info
@@ -170,6 +174,24 @@ class ExperimentRepository {
         return result
     }
 
+    suspend fun insertExperimentAsync(experiment: Experiment, sender: UserInfo, receivers: ArrayList<UserInfo>) {
+        mRealm.write {
+            Log.d(APPLICATION_TAG, "copying experiment to realm")
+
+            experiment.measurements = measurementsDummyData()
+            var managedExperiment = copyToRealm(experiment)
+
+
+            var cnt = 1
+            for(receiver in receivers){
+                Log.d(APPLICATION_TAG, "creating invitation #$cnt")
+                val invite = CollaborationInvite(findLatest(managedExperiment)!!, findLatest(receiver)!!, findLatest(sender)!!)
+                Log.d(APPLICATION_TAG, "storing invitation #$cnt")
+                this.copyToRealm(invite)
+            }
+
+        }
+    }
     /**
      * deletes experiment from the database
      *

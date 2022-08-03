@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.untitled.multimeter.MultimeterApp
-import com.untitled.multimeter.MultimeterApp.Companion.REALM_PARTITION
+import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.CreateAccountModel
@@ -12,16 +12,22 @@ import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.UserInfo
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
 import io.realm.kotlin.notifications.InitialObject
+import io.realm.kotlin.notifications.SingleQueryChange
 import io.realm.kotlin.notifications.UpdatedObject
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 
 /**
@@ -53,7 +59,7 @@ class UserRepository {
                 // output will be wrapped in Result, because of runCatching{}
                 realmApp.login(credentials)
 
-                getUserInfoBlocking()
+                getCurrentUserInfoBlocking()
             } // if no exception was thrown, propagate the successful Result
             .onSuccess { user : UserInfo ->
                     loginResult.postValue(Result.success(user))
@@ -117,7 +123,7 @@ class UserRepository {
      * @returns
      * LiveData of the invitations for the user
      */
-    fun getInvitations(user: User) : LiveData<Result<Unit>> {
+    fun getInvitations() : LiveData<Result<Unit>> {
         val registerResult = MutableLiveData<Result<Unit>> ()
         //query database
         return registerResult
@@ -283,7 +289,7 @@ class UserRepository {
      *  *Runs on the caller's thread/coroutine*
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
      */
-    private fun getUserInfoBlocking() : UserInfo{
+     fun getCurrentUserInfoBlocking() : UserInfo{
         initRealm()
 
         // find first userInfo matching user's id, throw an exception if none was found
@@ -297,35 +303,62 @@ class UserRepository {
 
         return result
     }
+    /**
+     * **Should only be called if the user is logged in**
+     *
+     * Get user with matching email
+     *
+     *  *Runs on the caller's thread/coroutine*
+     *  @param email email to match
+     * @return [UserInfo] for the found  user
+     * @throws NoSuchElementException if the user was not found
+     */
+    suspend fun getUserInfoByEmailAsync(email : String) : UserInfo{
+        initRealm()
+
+        return mRealm
+            .query<UserInfo>("email == $0", email)
+            .first().asFlow().single().obj!!
+    }
+    /**
+     * **Should only be called if the user is logged in**
+     *
+     * Get user with matching email
+     *
+     *  *Runs on the caller's thread/coroutine*
+     *  @param email email to match
+     * @return Observable [Result] of query for [UserInfo] for the found  user
+     */
+    fun getUserInfoByEmail(email : String) : LiveData<Result<UserInfo>>{
+        val liveData = MutableLiveData<Result<UserInfo>>()
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = kotlin.runCatching {
+                initRealm()
+
+                return@runCatching mRealm.query<UserInfo>("email == $0", email)
+                    .first().find() ?: throw RealmObjectNotFoundException()
+            }
+
+            liveData.postValue(result)
+
+        }
+
+
+        return liveData
+    }
 
     /**
      * **Should only be called if the user is logged in**
      *
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
      */
-    private fun getUserInfoWithQueryFlow() : LiveData<UserInfo> {
+    suspend fun getCurrentUserInfoAsync() : UserInfo {
         initRealm()
-
-        val resultLiveData = MutableLiveData<UserInfo>()
 
         val id = ObjectId.from(realmApp.currentUser!!.identity)
 
-        val query = mRealm.query<UserInfo>("_id == $0", id).first()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            query.asFlow().collect{
-                result ->
-                when(result){
-                    is InitialObject<UserInfo>,
-                    is UpdatedObject<UserInfo> -> {
-                        resultLiveData.postValue(result.obj)
-                        this.cancel()
-                    }
-                    else -> {}
-                }
-            }
-        }
-        return resultLiveData
+        return mRealm.query<UserInfo>("_id == $0", id).first().asFlow().single().obj!!
     }
     /**
      * Stores [UserInfo] about just registered user to [Realm]
