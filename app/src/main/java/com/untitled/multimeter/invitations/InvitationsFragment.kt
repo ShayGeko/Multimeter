@@ -39,7 +39,7 @@ class InvitationsFragment : Fragment() {
         //get all invitations for the current user
         var x: ObjectId = ObjectId.create()
         if (user != null) {
-            viewModel.getInvitations(user).observe(this) {
+            viewModel.getInvitations().observe(this) {
                 //On success, store the invitations into invitations list
                 it.onSuccess {
 
