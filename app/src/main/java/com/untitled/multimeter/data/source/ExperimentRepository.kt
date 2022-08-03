@@ -19,6 +19,7 @@ import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.exp
 
@@ -228,10 +229,16 @@ class ExperimentRepository {
             }
             measurements.add(MeasurementModel(currentMeasurement._id, currentMeasurement.user, dataPoints))
         }
+
+        //Convert RealmInstant to Calendar Object
+        val foundDate = Date(experiment.date.epochSeconds * 1000)
+        val currentDate: Calendar = Calendar.getInstance()
+        currentDate.time = foundDate
+
         return ExperimentModel(
             experiment._id,
             experiment.title,
-            experiment.date,
+            currentDate,
             experiment.comment,
             ArrayList(experiment.collaborators.toList()),
             measurements)
