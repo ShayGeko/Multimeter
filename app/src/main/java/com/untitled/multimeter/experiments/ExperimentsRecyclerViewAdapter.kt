@@ -82,35 +82,9 @@ class ExperimentsRecyclerViewAdapter(
         holder.dateView.text = date
         holder.yearView.text = year
 
-        //change all objectIds in measurements to string which is serializable
-        //dataValuesUserNames contains the userName for the user
-        //dataValuesDataPoints contains an ArrayList of ArrayLists of DataPoints
-        val data = Bundle()
-        val dataValues = currentItem.measurements
-        val dataValuesUserNames = ArrayList<String>()
-        val dataValuesDataPoints = ArrayList<ArrayList<DataPoint>>()
-        for (measurement in dataValues) {
-            //TODO: Query for username
-            dataValuesUserNames.add(measurement.user.toString())
-
-            val dataPoints = ArrayList<DataPoint>()
-            for (dataPoint in measurement.dataPoints) {
-                dataPoints.add(DataPoint(dataPoint.x,dataPoint.y))
-            }
-            dataValuesDataPoints.add(dataPoints)
-        }
-        data.putSerializable("users", dataValuesUserNames)
-        data.putSerializable("datapoints", dataValuesDataPoints)
-
         //Set up onClickListener to navigate to ExperimentEntry
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ExperimentDetailsActivity::class.java)
-            intent.putExtra("title", currentItem.title)
-            intent.putExtra("collaborators", collaboratorString)
-            intent.putExtra("dateTime", dateString)
-            intent.putExtra("data", data)
-            intent.putExtra("comment", currentItem.comment)
-            intent.putExtra("ReadOnly", 0)
             intent.putExtra("id",currentItem.id.toString())
             holder.itemView.context.startActivity(intent)
         }
