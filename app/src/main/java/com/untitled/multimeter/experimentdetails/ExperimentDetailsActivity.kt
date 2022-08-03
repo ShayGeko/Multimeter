@@ -21,17 +21,25 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.data.model.Experiment
+import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.runBlocking
+import java.text.DateFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.math.exp
 
 
 class ExperimentDetailsActivity : AppCompatActivity() {
     private lateinit var viewModel:ExperimentDetailsViewModel
     private lateinit var id: ObjectId
     private lateinit var validIds: ArrayList<Int>
+    private lateinit var titleView: TextView
+    private lateinit var collaboratorsView: TextView
+    private lateinit var dateTimeView: TextView
+    private lateinit var commentView: TextView
     private val colors = arrayListOf(Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.YELLOW, Color.WHITE, Color.GRAY, Color.DKGRAY, Color.BLACK)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,46 +50,92 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         val viewModelFactory = UserViewModelFactory(this.application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ExperimentDetailsViewModel::class.java)
 
-        val titleView : TextView = findViewById(R.id.experiment_title)
-        val collaboratorsView : TextView = findViewById(R.id.experiment_collaborators)
-        val dateTimeView : TextView = findViewById(R.id.experiment_dateTime)
-        val commentView : TextView = findViewById(R.id.experiment_comment)
+        titleView = findViewById(R.id.experiment_title)
+        collaboratorsView = findViewById(R.id.experiment_collaborators)
+        dateTimeView = findViewById(R.id.experiment_dateTime)
+        commentView  = findViewById(R.id.experiment_comment)
 
-        titleView.text = intent.extras?.getString("title")!!
-        collaboratorsView.text = intent.extras?.getString("collaborators")!!
-        dateTimeView.text = intent.extras?.getString("dateTime")!!
-        commentView.text = intent.extras?.getString("comment")!!
-        id = ObjectId.Companion.from(intent.extras?.getString("id")!!)
+        //get Experiment Id
+        id = ObjectId.from(intent.extras?.getString("id")!!)
+        viewModel.getExperiment(id).observe(this) { result ->
+            result.onSuccess {
+                val experiment: Experiment = result.getOrElse { throw RealmObjectNotFoundException("UserName for the current user not found!") }
 
-        //The Measurements come in an array of strings, each representing an ObjectId
-        val dataValues = intent.getBundleExtra("data")!!
-        val users: ArrayList<String> = dataValues.getSerializable("users") as ArrayList<String>
-        val datapoints: ArrayList<ArrayList<DataPoint>> = dataValues.getSerializable("datapoints") as ArrayList<ArrayList<DataPoint>>
-
-        //Log.e("users", users.toString())
-        //Log.e("datapoints", datapoints.toString())
-
-        //For the users get the usernames to display in the table
-        val usernames: ArrayList<String> = ArrayList<String>()//Collections.nCopies(users.size, ""))
-        validIds = ArrayList()
-        for (index in 0 until users.size) {
-            validIds.add(generateViewId())
-            viewModel.getUserName(ObjectId.Companion.from(users[index])).observe(this) { result ->
-                result.onSuccess {
-                    usernames.add(result.getOrElse { "" })
-
-                    //When all usernames are gotten, display the table
-                    if (usernames.size == users.size) { displayDataInTheTable(datapoints, usernames) }
+                //Format Collaborator String
+                var collaboratorString = ""
+                for (currentCollaborator in experiment.collaborators) {
+                    if (currentCollaborator != experiment.collaborators.last() ) {
+                        collaboratorString = collaboratorString + currentCollaborator + ", "
+                    }
+                    else {
+                        collaboratorString += currentCollaborator
+                    }
                 }
-                result.onFailure { error ->
-                    Log.e("ExperimentDetaillsActivity", "Error getting userName")
-                    throw error
+
+                //Format Title
+                var titleString = "Title: " + experiment.title
+
+                //Format Date
+                var dateString = ""
+                val currentDate = experiment.date
+                val time = currentDate[Calendar.HOUR_OF_DAY].toString() +":"+ currentDate[Calendar.MINUTE] +":"+ currentDate[Calendar.SECOND]
+                val month = DateFormatSymbols().months[currentDate.get(Calendar.MONTH)]
+                var date = ""
+                if (currentDate[Calendar.DATE] < 10) {
+                    date = "0"+currentDate[Calendar.DATE].toString()
                 }
+                else {
+                    date = currentDate[Calendar.DATE].toString()
+                }
+                val year = currentDate[Calendar.YEAR].toString()
+                val fullDate = month +" "+ date +" "+ year
+                dateString = "$dateString$fullDate, $time"
+
+                //Assign text
+                titleView.text = experiment.title
+                collaboratorsView.text = collaboratorString
+                dateTimeView.text = dateString
+                commentView.text = experiment.comment
+
+                //Get arraylist of userIds and Measurements
+                val dataValuesUserNames = ArrayList<String>()
+                val dataValuesDataPoints = ArrayList<ArrayList<DataPoint>>()
+                for (measurement in experiment.measurements) {
+                    dataValuesUserNames.add(measurement.user.toString())
+
+                    val dataPoints = ArrayList<DataPoint>()
+                    for (dataPoint in measurement.dataPoints) {
+                        dataPoints.add(DataPoint(dataPoint.x,dataPoint.y))
+                    }
+                    dataValuesDataPoints.add(dataPoints)
+                }
+
+                //For the users get the usernames to display in the table
+                val usernames: ArrayList<String> = ArrayList()
+                validIds = ArrayList()
+                for (index in 0 until dataValuesUserNames.size) {
+                    validIds.add(generateViewId())
+                    viewModel.getUserName(ObjectId.Companion.from(dataValuesUserNames[index])).observe(this) { result ->
+                        result.onSuccess {
+                            usernames.add(result.getOrElse { "" })
+
+                            //When all usernames are gotten, display the table
+                            if (usernames.size == dataValuesUserNames.size) { displayDataInTheTable(dataValuesDataPoints, usernames) }
+                        }
+                        result.onFailure { error ->
+                            Log.e("ExperimentDetaillsActivity", "Error getting userName")
+                            throw error
+                        }
+                    }
+                }
+
+                // display the data
+                displayDataOnGraph(dataValuesDataPoints)
+            }
+            result.onFailure {
+                Log.e("ExperimentDetailsActivity","FAIL")
             }
         }
-
-        // display the data
-        displayDataOnGraph(datapoints)
     }
 
     /**

@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.collections.ArrayList
+import kotlin.math.exp
 
 /**
  * Repository for Experiments
@@ -114,13 +115,15 @@ class ExperimentRepository {
      */
     fun getExperiment(experimentId: ObjectId) : LiveData<Result<Experiment>> {
         val result = MutableLiveData<Result<Experiment>> ()
-        Log.e("getExperiment", "Get Data")
         CoroutineScope(Dispatchers.IO).launch {
-            Log.e("getExperiment", "Coroutine")
             runCatching {
-                val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("experimentId == $0", experimentId)
-                val x = experimentList.first()
-                Log.e("getExperiment", x.toString())
+                val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentId)
+                val experiment = experimentList.find()[0]
+                return@runCatching experiment
+            }.onSuccess { experiment ->
+                result.postValue(Result.success(experiment))
+            }.onFailure { error ->
+                throw  error
             }
         }
         return result

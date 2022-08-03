@@ -2,6 +2,7 @@ package com.untitled.multimeter.experimentdetails
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.ExperimentModel
 import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
@@ -19,5 +20,9 @@ class ExperimentDetailsViewModel(private val userRepository: UserRepository, pri
 
     fun getUserName(objectId: ObjectId): LiveData<Result<String>> {
         return userRepository.getUserName(objectId)
+    }
+
+    fun getExperiment(objectId: ObjectId): LiveData<Result<Experiment>> {
+        return experimentRepository.getExperiment(objectId)
     }
 }
