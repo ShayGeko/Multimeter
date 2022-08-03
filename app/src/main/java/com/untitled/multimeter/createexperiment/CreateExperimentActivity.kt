@@ -1,23 +1,18 @@
 package com.untitled.multimeter.createexperiment
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.R
 import com.untitled.multimeter.UserViewModelFactory
-import com.untitled.multimeter.createaccount.CreateAccountViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList
@@ -58,19 +53,6 @@ class CreateExperimentActivity : AppCompatActivity() {
         //Starts a timer subroutine that updates the Date and Time display every 1000 milliseconds (1 second)
         dateTimeTimer = Timer()
         startDateTimeUpdator(dateTimeTimer)
-
-        //Get Friends List to create options for choosing collaborators
-        friendsArray = ArrayList()
-
-        //########################
-        // Get list of user friends from the database
-        // This is dummy data
-        val friendsList = ArrayList(listOf("Ben Smith", "Jim Smith", "Frank Smith","Howie Smith", "Joe Smith", "Timmy","Smith Smith", "Frojo", "Finn", "Simon", "Christopher", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"))
-        //########################
-
-        for (x in friendsList) {
-            friendsArray.add(x)
-        }
 
         //Create an alertDialog when choose collaborators is picked
         collaboratorsEditText.isFocusable = false
@@ -149,18 +131,11 @@ class CreateExperimentActivity : AppCompatActivity() {
      */
     private fun collaboratorAlertDialog() {
 
-        //Convert FriendsArray to Charsequence[]
-        val friendsCharSequence = friendsArray.toTypedArray<CharSequence>()
-
-        //Create a boolean array to signify choices, initialized to all false,
-        val checkedItems = BooleanArray(friendsCharSequence.size) { false }
-
         //Initialize Alert Builder
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
         // set title
         builder.setTitle("Invite collaborator")
-
 
 
         val editText = EditText(this)
@@ -189,6 +164,18 @@ class CreateExperimentActivity : AppCompatActivity() {
                       onSuccess {
                           viewModel.invitationReceivers.add(it)
                           toast.setText("Added ${it.userName} to receivers")
+                          //Prepare edittext string
+                          var collaboratorString = ""
+
+                          for (x in viewModel.invitationReceivers) {
+                              collaboratorString += x.userName
+                              if (x != viewModel.invitationReceivers.last()) {
+                                  collaboratorString += ", "
+                              }
+                          }
+
+                          //Set Collaborators Edittext to a string of the values
+                          collaboratorsEditText.setText(collaboratorString)
                           toast.show()
                           dialog.dismiss()
                       }
@@ -206,21 +193,7 @@ class CreateExperimentActivity : AppCompatActivity() {
                       }
                   }
               }
-//            //Clear previous choices
-//            experimentCollaborators.clear()
-//
-//            //Prepare edittext string
-            var collaboratorString = ""
 
-            for (x in viewModel.invitationReceivers) {
-                collaboratorString += x.userName
-                if (x != viewModel.invitationReceivers.last()) {
-                    collaboratorString += ", "
-                }
-            }
-
-            //Set Collaborators Edittext to a string of the values
-            collaboratorsEditText.setText(collaboratorString)
         }
         //On cancel, close dialog
         builder.setNegativeButton("Cancel") {dialog, _ ->

@@ -177,6 +177,8 @@ class ExperimentRepository {
     suspend fun insertExperimentAsync(experiment: Experiment, sender: UserInfo, receivers: ArrayList<UserInfo>) {
         mRealm.write {
             Log.d(APPLICATION_TAG, "copying experiment to realm")
+
+            experiment.measurements = measurementsDummyData()
             var managedExperiment = copyToRealm(experiment)
 
 

@@ -123,7 +123,7 @@ class UserRepository {
      * @returns
      * LiveData of the invitations for the user
      */
-    fun getInvitations(user: User) : LiveData<Result<Unit>> {
+    fun getInvitations() : LiveData<Result<Unit>> {
         val registerResult = MutableLiveData<Result<Unit>> ()
         //query database
         return registerResult
