@@ -153,13 +153,6 @@ class UserRepository {
                     currentExperiments.add(experiment._id)
                     userInfo.experiments = currentExperiments
 
-                    //Logs the user
-                    /*
-                    Log.e("UserRepository", "userInfo _id: "+userInfo._id.toString())
-                    Log.e("UserRepository", "userInfo username: "+userInfo.userName.toString())
-                    Log.e("UserRepository", "userInfo email: "+userInfo.email.toString())
-                    Log.e("UserRepository", "userInfo experiment: "+userInfo.experiments.toString())*/
-
                     return@writeBlocking userInfo
                 }
             } // if no exception was thrown, propagate the successful Result
@@ -360,6 +353,7 @@ class UserRepository {
 
         return mRealm.query<UserInfo>("_id == $0", id).first().asFlow().single().obj!!
     }
+
     /**
      * Stores [UserInfo] about just registered user to [Realm]
      *

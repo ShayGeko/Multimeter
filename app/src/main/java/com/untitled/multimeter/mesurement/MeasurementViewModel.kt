@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.jjoe64.graphview.series.DataPoint
-import com.untitled.multimeter.data.model.Experiment
-import com.untitled.multimeter.data.model.Measurement
-import com.untitled.multimeter.data.model.MeasurementModel
+import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.ExperimentRepository
 import com.untitled.multimeter.data.source.UserRepository
+import io.realm.kotlin.types.ObjectId
+import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.*
 
 class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
@@ -60,9 +60,15 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
      * @return
      * LiveData<Result<Boolean>>, where Boolean is true if success
      */
-    fun addMeasurementToExperiment(measurement: Measurement, experiment: Experiment): LiveData<Result<Boolean>> {
-        return experimentRepository.addMeasurementToExperiment(measurement, experiment)
+    fun addMeasurementToExperiment(collectedData: ArrayList<DataPoint>, experimentObjectId: ObjectId): LiveData<Result<Boolean>> {
+        return experimentRepository.addMeasurementToExperiment(collectedData, experimentObjectId)
     }
 
+    fun getAllExperimentsForUser() : LiveData<Result<ArrayList<ExperimentModel>>> {
+        return experimentRepository.getAllExperimentsForUser()
+    }
 
+    fun getExperiment(objectId: ObjectId): LiveData<Result<Experiment>> {
+        return experimentRepository.getExperiment(objectId)
+    }
 }

@@ -59,7 +59,7 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         id = ObjectId.from(intent.extras?.getString("id")!!)
         viewModel.getExperiment(id).observe(this) { result ->
             result.onSuccess {
-                val experiment: Experiment = result.getOrElse { throw RealmObjectNotFoundException("UserName for the current user not found!") }
+                val experiment: Experiment = result.getOrElse { throw RealmObjectNotFoundException("Experiment not found!") }
 
                 //Format Collaborator String
                 var collaboratorString = ""
