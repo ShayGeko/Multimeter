@@ -50,4 +50,16 @@
         >
 
     </Button>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="30dp">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Measurement to Experiment"
+            android:id="@+id/dummy_measurement_button"
+            />
+    </FrameLayout>
 </LinearLayout>

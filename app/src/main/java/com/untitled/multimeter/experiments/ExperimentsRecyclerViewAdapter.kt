@@ -60,7 +60,6 @@ class ExperimentsRecyclerViewAdapter(
 
         var titleString = "Title: " + currentItem.title
 
-        var dateString = ""
         val currentDate = currentItem.date
         val time = currentDate[Calendar.HOUR_OF_DAY].toString() +":"+ currentDate[Calendar.MINUTE] +":"+ currentDate[Calendar.SECOND]
         val month = DateFormatSymbols().months[currentDate.get(Calendar.MONTH)]
@@ -72,8 +71,6 @@ class ExperimentsRecyclerViewAdapter(
             date = currentDate[Calendar.DATE].toString()
         }
         val year = currentDate[Calendar.YEAR].toString()
-        val fullDate = month +" "+ date +" "+ year
-        dateString = "$dateString$fullDate, $time"
 
         //Put values into the textviews
         holder.titleView.text = titleString
