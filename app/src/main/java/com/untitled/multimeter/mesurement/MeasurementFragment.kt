@@ -89,9 +89,10 @@ class MeasurementFragment : Fragment() {
         //Button Adds Measurement To An Experiment
         //When measurement works store Measurements in collectedData as a ArrayList<DataPoints>
         //For now I have a private function to Create dummy data, delete later, put ur data in collectedData
+        //This is the only thing you have to change, the AlertDialog stuff is done
         val collectedData = measurementDummyData()
 
-        //When the Add Measurement button is clicked, open an alertDialog to choose an experiment to add to
+        //When the Add Measurement button is clicked, opens an alertDialog to choose an experiment to add to
         val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
         addMeasurementButton.setOnClickListener {
             openAlertDialog(collectedData)
