@@ -151,6 +151,12 @@ class MeasurementFragment : Fragment() {
                 //dataList now has the users experiments
                 dataList = result.getOrDefault(ArrayList<ExperimentModel>())
 
+                //If user has no experiments
+                if(dataList.isEmpty()) {
+                    Toast.makeText(this.activity?.applicationContext,"User Has No Experiments",Toast.LENGTH_LONG).show()
+                    return@observe
+                }
+
                 //get the titles for the experiments (this is what we display in he alertDialog)
                 val titles = ArrayList<String>()
                 for (experiment in dataList) {
