@@ -17,7 +17,7 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.untitled.multimeter.MultimeterApp
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.createexperiment.CreateExperimentViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
@@ -50,7 +50,7 @@ class MeasurementFragment : Fragment() {
         val t = inflater.inflate(R.layout.measure, container, false)
 
         // get the view model
-        val viewModelFactory = UserViewModelFactory(requireActivity().application)
+        val viewModelFactory = RealmViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(MeasurementViewModel::class.java)
 
         // mock the connection to the hardware

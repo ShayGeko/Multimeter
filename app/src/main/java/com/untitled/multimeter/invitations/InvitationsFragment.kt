@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.data.model.ExperimentModel
-import com.untitled.multimeter.login.LoginActivity
-import io.realm.kotlin.types.ObjectId
 import kotlin.collections.ArrayList
 
 /**
@@ -33,25 +31,18 @@ class InvitationsFragment : Fragment() {
         val user = MultimeterApp.realmApp.currentUser
 
         //get viewmodel
-        val viewModelFactory = UserViewModelFactory(requireActivity().application)
+        val viewModelFactory = RealmViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(InvitationsViewModel::class.java)
 
-        //get all invitations for the current user
-        var x: ObjectId = ObjectId.create()
-        if (user != null) {
-            viewModel.getInvitations().observe(this) {
-                //On success, store the invitations into invitations list
-                it.onSuccess {
-
-                }
-                it.onFailure {
-
-                }
+        
+        viewModel.getInvitations().observe(this) {
+            //On success, store the invitations into invitations list
+            it.onSuccess {
             }
-        }
-        else {
-            startActivity(Intent(context, LoginActivity::class.java))
-        }
+            it.onFailure {
+
+            }
+            }
 
         //For each invitation, query the database for the details of that experiment
         // TODO

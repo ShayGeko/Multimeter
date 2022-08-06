@@ -37,4 +37,6 @@
     <string name="collaborators">Collaborators</string>
     <string name="collaboratorsHint">Enter Collaborators</string>
     <string name="currentTime">Current Time</string>
+
+    <string name="default_notification_channel_id"> 12 </string>
 </resources>

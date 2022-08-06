@@ -10,14 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
-import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.data.model.CreateAccountModel
-import com.untitled.multimeter.data.model.UserInfo
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.UserAlreadyExistsException
-import io.realm.kotlin.types.ObjectId
 
 class CreateAccountActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
@@ -32,7 +29,7 @@ class CreateAccountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create_account)
 
         // get the viewmodel
-        val viewModelFactory = UserViewModelFactory(application)
+        val viewModelFactory = RealmViewModelFactory(application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(CreateAccountViewModel::class.java)
 
         // get the views
@@ -95,6 +92,7 @@ class CreateAccountActivity : AppCompatActivity() {
             it.onSuccess {
                 Toast.makeText(this, "Welcome, ${createAccountModel.username}", Toast.LENGTH_LONG).show()
 
+                viewModel.registerDeviceForPushNotifications()
                 val intent = Intent(this, MainMenuActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)

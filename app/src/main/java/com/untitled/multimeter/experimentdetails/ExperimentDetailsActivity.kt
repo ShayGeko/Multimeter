@@ -1,6 +1,5 @@
 package com.untitled.multimeter.experimentdetails
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -13,23 +12,19 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
+import io.realm.kotlin.types.ObjectId
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
-import io.realm.kotlin.types.ObjectId
-import kotlinx.coroutines.runBlocking
 import java.text.DateFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
-import kotlin.math.exp
 
 
 class ExperimentDetailsActivity : AppCompatActivity() {
@@ -47,7 +42,7 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         setContentView(R.layout.experiment_entry)
 
         //Initialize Viewmodel
-        val viewModelFactory = UserViewModelFactory(this.application)
+        val viewModelFactory = RealmViewModelFactory(this.application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ExperimentDetailsViewModel::class.java)
 
         titleView = findViewById(R.id.experiment_title)

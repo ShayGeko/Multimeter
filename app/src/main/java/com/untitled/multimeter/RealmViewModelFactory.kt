@@ -10,8 +10,9 @@ import com.untitled.multimeter.experiments.ExperimentViewModel
 import com.untitled.multimeter.invitations.InvitationsViewModel
 import com.untitled.multimeter.login.LoginViewModel
 import com.untitled.multimeter.mesurement.MeasurementViewModel
+import com.untitled.multimeter.settings.SettingsViewModel
 
-class UserViewModelFactory(
+class RealmViewModelFactory(
     private val application : Application
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -29,6 +30,8 @@ class UserViewModelFactory(
             return ExperimentDetailsViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
         if(modelClass.isAssignableFrom(MeasurementViewModel::class.java))
             return MeasurementViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
+        if(modelClass.isAssignableFrom(SettingsViewModel::class.java))
+            return SettingsViewModel((application as MultimeterApp).userRepository) as T
 
 
         throw IllegalArgumentException("Unknown ViewModel class")

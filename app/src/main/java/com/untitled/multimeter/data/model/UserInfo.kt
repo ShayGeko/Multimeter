@@ -17,4 +17,5 @@ class UserInfo() : RealmObject {
     var userName : String = ""
     var email : String = ""
     var experiments : RealmList<ObjectId> = RealmListObjectId(ArrayList<ObjectId>())
+    var deviceToken : String? = null
 }
