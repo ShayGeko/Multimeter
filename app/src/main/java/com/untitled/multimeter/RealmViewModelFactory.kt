@@ -9,6 +9,7 @@ import com.untitled.multimeter.experimentdetails.ExperimentDetailsViewModel
 import com.untitled.multimeter.experiments.ExperimentViewModel
 import com.untitled.multimeter.invitations.InvitationsViewModel
 import com.untitled.multimeter.login.LoginViewModel
+import com.untitled.multimeter.mesurement.MeasurementViewModel
 import com.untitled.multimeter.settings.SettingsViewModel
 
 class RealmViewModelFactory(
@@ -27,6 +28,8 @@ class RealmViewModelFactory(
             return CreateExperimentViewModel((application as MultimeterApp).userRepository, application.experimentRepository, application.collaborationInviteRepository) as T
         if(modelClass.isAssignableFrom(ExperimentDetailsViewModel::class.java))
             return ExperimentDetailsViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
+        if(modelClass.isAssignableFrom(MeasurementViewModel::class.java))
+            return MeasurementViewModel((application as MultimeterApp).userRepository, application.experimentRepository) as T
         if(modelClass.isAssignableFrom(SettingsViewModel::class.java))
             return SettingsViewModel((application as MultimeterApp).userRepository) as T
 

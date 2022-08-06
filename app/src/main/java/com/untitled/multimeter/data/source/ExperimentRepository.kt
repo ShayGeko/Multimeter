@@ -11,6 +11,7 @@ import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.model.ExperimentModel
+import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.query.RealmQuery
@@ -19,14 +20,17 @@ import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.exp
 
 /**
  * Repository for Experiments
  *
  */
 class ExperimentRepository {
-    private val mRealm = getRealmInstance()
+    private lateinit var mRealm : Realm
+    private var isRealmOpen = false
     /**
      * Tries to pull all experiments for the current user
      *
@@ -35,6 +39,7 @@ class ExperimentRepository {
      * and error wrapped in Result otherwise
      */
     fun getAllExperimentsForUser() : LiveData<Result<ArrayList<ExperimentModel>>> {
+        initRealm()
         val result = MutableLiveData<Result<ArrayList<ExperimentModel>>> ()
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -113,14 +118,17 @@ class ExperimentRepository {
      * and error wrapped in Result otherwise
      */
     fun getExperiment(experimentId: ObjectId) : LiveData<Result<Experiment>> {
+        initRealm()
         val result = MutableLiveData<Result<Experiment>> ()
-        Log.e("getExperiment", "Get Data")
         CoroutineScope(Dispatchers.IO).launch {
-            Log.e("getExperiment", "Coroutine")
             runCatching {
-                val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("experimentId == $0", experimentId)
-                val x = experimentList.first()
-                Log.e("getExperiment", x.toString())
+                val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentId)
+                val experiment = experimentList.find()[0]
+                return@runCatching experiment
+            }.onSuccess { experiment ->
+                result.postValue(Result.success(experiment))
+            }.onFailure { error ->
+                throw  error
             }
         }
         return result
@@ -137,6 +145,7 @@ class ExperimentRepository {
      * and error wrapped in Result otherwise
      */
     fun insertExperiment(experiment: Experiment, receivers : ArrayList<UserInfo>): LiveData<Result<Boolean>>{
+        initRealm()
         val result = MutableLiveData<Result<Boolean>> ()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -144,7 +153,7 @@ class ExperimentRepository {
 
                     //Inserting dummy data
                     //TODO: delete this
-                    experiment.measurements = measurementsDummyData()
+                    experiment.measurements = realmListOf()  //measurementsDummyData()
 
                     this.copyToRealm(experiment)
 
@@ -178,7 +187,7 @@ class ExperimentRepository {
         mRealm.write {
             Log.d(APPLICATION_TAG, "copying experiment to realm")
 
-            experiment.measurements = measurementsDummyData()
+            experiment.measurements = realmListOf()  //measurementsDummyData()
             var managedExperiment = copyToRealm(experiment)
 
 
@@ -198,6 +207,7 @@ class ExperimentRepository {
      * @param experiment - id
      */
     fun deleteExperiment(objectId: ObjectId) {
+        initRealm()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 mRealm.writeBlocking {
@@ -215,6 +225,57 @@ class ExperimentRepository {
         }
     }
 
+    /**
+     * appends measurement to experiments measurements realmList array
+     *
+     * @param measurement - Measurement to be added
+     * @param experimentObjectId - ObjectId of the Experiment to be added to
+     *
+     * @return
+     * returns a LiveData<Result<Boolean>> where Boolean is true if success
+     */
+    fun addMeasurementToExperiment(collectedData: ArrayList<DataPoint>, experimentObjectId: ObjectId): LiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>> ()
+        CoroutineScope(Dispatchers.IO).launch {
+            initRealm()
+            runCatching {
+                mRealm.writeBlocking {
+
+                    //Get experiment from
+                    val experimentList: RealmQuery<Experiment> = this.query<Experiment>("_id == $0", experimentObjectId)
+                    val experiment = experimentList.find()[0]
+
+                    //Create Measurement
+                    val newMeasurement = Measurement().apply {
+                        this._id = ObjectId.create()
+                        this.user = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
+                        var realmListOfMeasurementDataPoints = realmListOf<MeasurementDataPoint>()
+                        for (dataPoint in collectedData) {
+                            realmListOfMeasurementDataPoints.add(MeasurementDataPoint().apply { this.x = dataPoint.x; this.y = dataPoint.y })
+                        }
+                        this.dataPoints = realmListOfMeasurementDataPoints
+                    }
+
+                    //add measurement
+                    //val measurement: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentObjectId)
+                    //val experiment = experimentList.find()[0]
+                    //experiment.measurements.add(measurement)
+                    val measurements = experiment.measurements
+                    measurements.add(newMeasurement)
+                    experiment.measurements = measurements
+                    //experiment.comment = "comment"
+
+                    return@writeBlocking experiment
+                }
+            }.onSuccess {
+                result.postValue(Result.success(true))
+            }.onFailure { exception: Throwable ->
+                result.postValue(Result.failure(exception))
+            }
+        }
+        return result
+    }
+
 
     private fun experimentToExperimentDataClass(experiment: Experiment): ExperimentModel {
         val measurements: ArrayList<MeasurementModel> = ArrayList()
@@ -225,10 +286,16 @@ class ExperimentRepository {
             }
             measurements.add(MeasurementModel(currentMeasurement._id, currentMeasurement.user, dataPoints))
         }
+
+        //Convert RealmInstant to Calendar Object
+        val foundDate = Date(experiment.date.epochSeconds * 1000)
+        val currentDate: Calendar = Calendar.getInstance()
+        currentDate.time = foundDate
+
         return ExperimentModel(
             experiment._id,
             experiment.title,
-            experiment.date,
+            currentDate,
             experiment.comment,
             ArrayList(experiment.collaborators.toList()),
             measurements)
@@ -262,5 +329,12 @@ class ExperimentRepository {
         result.add(dummyMeasurement1)
         result.add(dummyMeasurement2)
         return result
+    }
+
+    private fun initRealm(){
+        if(!isRealmOpen) {
+            mRealm = getRealmInstance()
+            isRealmOpen = true
+        }
     }
 }
