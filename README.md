@@ -5,6 +5,6 @@
 ### Contributors:
 - Heorhii Shramko
 - Reid Gendron
-- Hoomehr Mangol
+- Hoomehr Mangoli
 - Cleon Cheng
 - Lucas Park
