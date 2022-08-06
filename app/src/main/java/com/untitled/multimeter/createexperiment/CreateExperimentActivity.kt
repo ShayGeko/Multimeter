@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.ext.realmListOf
@@ -36,7 +36,7 @@ class CreateExperimentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create_experiment)
 
         // get the viewmodel
-        val viewModelFactory = UserViewModelFactory(application)
+        val viewModelFactory = RealmViewModelFactory(application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(CreateExperimentViewModel::class.java)
 
         //Initialize lateinit variables

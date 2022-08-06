@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.untitled.multimeter.MainMenuActivity
 import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.createaccount.CreateAccountActivity
 import io.realm.kotlin.mongodb.exceptions.ConnectionException
 import io.realm.kotlin.mongodb.exceptions.InvalidCredentialsException
@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val viewModelFactory = UserViewModelFactory(application)
+        val viewModelFactory = RealmViewModelFactory(application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)
 
         // get the views
@@ -75,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
 
             // if result is successful, return to the main activity
             it.onSuccess { userInfo ->
+                viewModel.registerDeviceForPushNotifications(userInfo)
 
                 Toast.makeText(this, "Welcome, ${userInfo.userName}", Toast.LENGTH_LONG).show()
                 startActivity(Intent(application, MainMenuActivity::class.java))

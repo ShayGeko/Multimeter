@@ -2,23 +2,15 @@ package com.untitled.multimeter.experiments
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
-import android.os.Parcelable.Creator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.jjoe64.graphview.series.DataPoint
-import com.untitled.multimeter.UserViewModelFactory
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.model.ExperimentModel
-import com.untitled.multimeter.data.model.MeasurementDataPoint
 import com.untitled.multimeter.databinding.FragmentExperimentsBinding
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
-import io.realm.kotlin.types.ObjectId
 import java.text.DateFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList

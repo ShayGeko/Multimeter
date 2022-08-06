@@ -2,6 +2,9 @@ package com.untitled.multimeter
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.CollaborationInviteRepository
 import com.untitled.multimeter.data.source.ExperimentRepository
@@ -22,6 +25,8 @@ class MultimeterApp : Application() {
 
 
         realmApp = App.create(getString(R.string.realm_app_id))
+
+
 
         Log.d(APPLICATION_TAG, "Initialized the Realm App")
     }

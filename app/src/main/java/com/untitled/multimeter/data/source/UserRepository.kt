@@ -360,6 +360,34 @@ class UserRepository {
 
         return mRealm.query<UserInfo>("_id == $0", id).first().asFlow().single().obj!!
     }
+
+    suspend fun addOrUpdateDeviceToken(userInfo : UserInfo, token : String){
+        initRealm()
+
+        mRealm.write{
+            val latestUserInfo = findLatest(userInfo)
+            copyToRealm(latestUserInfo!!.apply { deviceToken = token })
+        }
+    }
+
+    /**
+     * Removes device registration token from current user
+     * Does nothing if the user is not logged in
+     */
+    suspend fun removeDeviceRegistrationTokenFromCurrentUser(){
+        initRealm()
+
+        val user = realmApp.currentUser
+
+        if(user!= null && user.loggedIn){
+            val id = ObjectId.from(user.identity)
+            mRealm.write {
+                val userInfo = this.query<UserInfo>("_id == $0", id).first().find()
+
+                userInfo?.deviceToken = null
+            }
+        }
+    }
     /**
      * Stores [UserInfo] about just registered user to [Realm]
      *

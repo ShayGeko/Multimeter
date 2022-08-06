@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.untitled.multimeter.R
-import com.untitled.multimeter.UserViewModelFactory
+import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.data.model.ExperimentModel
 import java.util.*
 
@@ -27,7 +27,7 @@ class ExperimentListHolderFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         //Initialize Viewmodel
-        val viewModelFactory = UserViewModelFactory(requireActivity().application)
+        val viewModelFactory = RealmViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ExperimentViewModel::class.java)
     }
 
