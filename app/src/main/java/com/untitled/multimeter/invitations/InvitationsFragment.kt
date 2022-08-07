@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +19,6 @@ import com.untitled.multimeter.data.model.ExperimentModel
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.notifications.InitialResults
 import io.realm.kotlin.notifications.UpdatedResults
-import kotlin.collections.ArrayList
 
 /**
  * A fragment representing a list of Items.
@@ -27,6 +27,8 @@ class InvitationsFragment : Fragment() {
     private lateinit var viewModel: InvitationsViewModel
 
     private lateinit var invitationsAdapter : InvitationsRecyclerViewAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var noDataTextView : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +45,27 @@ class InvitationsFragment : Fragment() {
             //On success, store the invitations into invitations list
             when(it){
                 is InitialResults -> {
+                    if(it.list.isEmpty()){
+                        recyclerView.visibility = View.GONE
+                        noDataTextView.visibility = View.VISIBLE
+                    }
+                    else {
+                        recyclerView.visibility = View.VISIBLE
+                        noDataTextView.visibility = View.GONE
+                    }
                     invitationsAdapter.setInitialData(it.list.toRealmList())
                 }
                 is UpdatedResults -> {
                     Log.d(APPLICATION_TAG, "invitations collection update noticed")
                     Log.d(APPLICATION_TAG, it.toString())
+                    if(it.list.isEmpty()){
+                        recyclerView.visibility = View.GONE;
+                        noDataTextView.visibility = View.VISIBLE;
+                    }
+                    else {
+                        recyclerView.visibility = View.VISIBLE;
+                        noDataTextView.visibility = View.GONE;
+                    }
                     invitationsAdapter.updateData(it)
                 }
             }
@@ -62,13 +80,15 @@ class InvitationsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_invitations_list_holder, container, false)
+
+        recyclerView = view.findViewById<RecyclerView>(R.id.list)
+        noDataTextView = view.findViewById(R.id.no_data_textview)
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = invitationsAdapter
-            }
+        with(recyclerView) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = invitationsAdapter
         }
+
         return view
     }
 }
