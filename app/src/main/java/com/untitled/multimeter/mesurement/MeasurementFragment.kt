@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.untitled.multimeter.MainFragment
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.RealmViewModelFactory
+import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.createexperiment.CreateExperimentViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
@@ -67,6 +69,15 @@ class MeasurementFragment : Fragment() {
                 series.appendData(datapoint,true,Max_Datapoints)
             }
         }
+        viewModel.connection_stat.observe(requireActivity()){
+            if(it == false){
+                val transaction = fragmentManager?.beginTransaction()
+                transaction?.replace(R.id.fragment_container, ConnectionFragment())
+                transaction?.commit()
+                MainFragment.state = MainFragment.CONNECT
+            }
+        }
+
 
         // sett up the graph and add mock data
         setUpLineGraph(t)
@@ -127,7 +138,9 @@ class MeasurementFragment : Fragment() {
     /**
      * Adds mock up data to the [lineGraphView]
      */
-    private fun mockLineGraphData(){
+
+
+    private fun mockLineGraphData(){//array:ArrayList<DataPoint>
         lineGraphView.animate()
         lineGraphView.addSeries(series)
     }
