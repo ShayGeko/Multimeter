@@ -148,12 +148,10 @@ class UserRepository {
                     //Get the current users entry
                     val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
                     val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
-                    val userInfo = userQuery.find()[0]
+                    val userInfo = userQuery.find().first()
 
                     //Add Experiments to the user
-                    val currentExperiments = userInfo.experiments
-                    currentExperiments.add(experiment._id)
-                    userInfo.experiments = currentExperiments
+                    userInfo.experiments.add(experiment._id)
 
                     return@writeBlocking userInfo
                 }
