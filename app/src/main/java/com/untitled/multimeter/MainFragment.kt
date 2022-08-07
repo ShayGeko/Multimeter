@@ -1,12 +1,18 @@
 package com.untitled.multimeter
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.wifi.WifiManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.mesurement.MeasurementFragment
+import java.net.InetAddress
 
 /**
  * Main Fragment. This class handles the state of the
@@ -48,22 +54,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (state) {
-            CONNECT -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
-            CONNECTED -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
-            MEASURE -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, MeasurementFragment())
-                transaction.commit()
-            }
+        if (state == MEASURE) {
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, MeasurementFragment())
+            transaction.commit()
+        } else {
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, ConnectionFragment())
+            transaction.commit()
         }
     }
 }
