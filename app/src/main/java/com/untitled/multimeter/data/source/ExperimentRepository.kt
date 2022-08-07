@@ -201,6 +201,21 @@ class ExperimentRepository {
 
         }
     }
+
+    fun addUserToCollaborators(user : UserInfo, experiment: Experiment){
+        CoroutineScope(Dispatchers.IO).launch {
+            mRealm.writeBlocking {
+                val managedUser = findLatest(user)
+                val managedExperiment = findLatest(experiment)
+
+                if(managedExperiment == null || managedUser == null) return@writeBlocking
+
+                managedExperiment.collaborators.add(user.userName)
+                managedUser.experiments.add(experiment._id)
+            }
+        }
+    }
+
     /**
      * deletes experiment from the database
      *

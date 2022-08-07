@@ -97,6 +97,12 @@ class CreateExperimentActivity : AppCompatActivity() {
         //Get input from edit text
         val title = titleEditText.text.toString()
 
+        // make sure title is non-empty:
+        if(title.isEmpty()){
+            Toast.makeText(this, "Title should not be empty", Toast.LENGTH_LONG)
+            return
+        }
+
         //Create New Experiment Entry
         val newExperiment = Experiment().apply {
             this.title = title
