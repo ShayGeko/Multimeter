@@ -116,18 +116,20 @@ class UserRepository {
         return registerResult
     }
 
-    /**
-     * get the invitation for the current user
-     *
-     * @param user - User
-     * @returns
-     * LiveData of the invitations for the user
-     */
-    fun getInvitations() : LiveData<Result<Unit>> {
-        val registerResult = MutableLiveData<Result<Unit>> ()
-        //query database
-        return registerResult
-    }
+//    /**
+//     * get the invitation for the current user
+//     *
+//     * @param user - User
+//     * @returns
+//     * LiveData of the invitations for the user
+//     */
+//    fun getInvitations() : LiveData<Result<Unit>> {
+//        val registerResult = MutableLiveData<Result<Unit>> ()
+//        //query database
+//        return registerResult
+//    }
+
+
 
     /**
      * Attempts to add experiment to the user

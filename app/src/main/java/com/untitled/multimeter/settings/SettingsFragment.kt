@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import com.untitled.multimeter.R
@@ -64,6 +65,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun logout(){
         viewModel.logout()
 
-        requireActivity().finish()
+        finishAffinity(requireActivity())
     }
 }

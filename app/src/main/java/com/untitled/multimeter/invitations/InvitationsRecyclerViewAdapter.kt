@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.untitled.multimeter.data.model.CollaborationInvite
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import com.untitled.multimeter.databinding.FragmentInvitationsBinding
-import com.untitled.multimeter.data.model.ExperimentModel
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.notifications.UpdatedResults
+import io.realm.kotlin.types.RealmList
 import java.text.DateFormatSymbols
 import java.util.*
 
 class InvitationsRecyclerViewAdapter(
-    private var list: List<ExperimentModel> = emptyList()
+    private val viewModel: InvitationsViewModel,
+    private var list: RealmList<CollaborationInvite> = realmListOf()
 ) : RecyclerView.Adapter<InvitationsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,10 +40,11 @@ class InvitationsRecyclerViewAdapter(
         val acceptButton = holder.acceptButton
         val declineButton = holder.declineButton
 
+        val experiment = currentItem.experiment ?: return
         //Format data into string
         var collaboratorString = ""
-        for (currentCollaborator in currentItem.collaborators!!) {
-            if (currentCollaborator != currentItem.collaborators!!.last() ) {
+        for (currentCollaborator in experiment.collaborators) {
+            if (currentCollaborator != experiment.collaborators.last() ) {
                 collaboratorString = collaboratorString + currentCollaborator + ", "
             }
             else {
@@ -48,10 +53,14 @@ class InvitationsRecyclerViewAdapter(
         }
 
         //get experiment details from current item
-        var titleString = currentItem.title
-        val currentDate = currentItem.date
+        var titleString = experiment.title
 
         //Format date
+
+        val foundDate = Date(experiment.date.epochSeconds * 1000)
+        val currentDate: Calendar = Calendar.getInstance()
+        currentDate.time = foundDate
+
         var dateString = "Created: "
         var seconds: String = currentDate[Calendar.SECOND].toString()
         if (currentDate[Calendar.SECOND] < 10) {
@@ -68,32 +77,21 @@ class InvitationsRecyclerViewAdapter(
         holder.titleView.text = titleString
         holder.dateView.text = dateString
 
-        //Set up onClickListener to navigate to ExperimentEntry
-        val data = Bundle()
-        val dataValues = arrayOf(currentItem.measurements)
-        data.putSerializable("values", dataValues)
-
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ExperimentDetailsActivity::class.java)
-            intent.putExtra("title", currentItem.title)
-            intent.putExtra("collaborators", collaboratorString)
-            intent.putExtra("dateTime", dateString)
-            intent.putExtra("data", data)
-            intent.putExtra("comment", currentItem.comment)
-            intent.putExtra("ReadOnly", 1)
+            intent.putExtra("id", experiment._id.toString())
             holder.itemView.context.startActivity(intent)
         }
 
         //On accept button clicked, add experiment to the current users list of participating experiments,
         // then remove invitation from the users invatation list in the database
         acceptButton.setOnClickListener {
-            addExperimentToUser()
-            removeInvitation()
+            acceptInvitation(currentItem)
         }
 
         //On decline button clicked, remove invitation from the users invitation list in the database
         declineButton.setOnClickListener {
-            removeInvitation()
+            declineInvitation(currentItem)
         }
     }
 
@@ -111,13 +109,21 @@ class InvitationsRecyclerViewAdapter(
         }
     }
 
-    //TODO
-    private fun addExperimentToUser() {
+    fun updateData(updates: UpdatedResults<CollaborationInvite>){
+        notifyItemChanged(0)
+    }
 
+    fun setInitialData(list : RealmList<CollaborationInvite>){
+        this.list = list
+        notifyDataSetChanged()
+    }
+    //TODO
+    private fun acceptInvitation(invite: CollaborationInvite) {
+        viewModel.accept(invite)
     }
 
     //TODO
-    private fun removeInvitation() {
-
+    private fun declineInvitation(invite: CollaborationInvite) {
+        viewModel.decline(invite)
     }
 }
