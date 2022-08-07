@@ -12,10 +12,7 @@ import io.realm.kotlin.notifications.InitialResults
 import io.realm.kotlin.notifications.ResultsChange
 import io.realm.kotlin.query.RealmResults
 import io.realm.kotlin.types.ObjectId
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class CollaborationInviteRepository {
     val mRealm = getRealmInstance()
@@ -47,5 +44,17 @@ class CollaborationInviteRepository {
         }
 
         return changes
+    }
+
+    fun deleteInvitation(invite: CollaborationInvite){
+        CoroutineScope(Dispatchers.IO).launch {
+            mRealm.writeBlocking {
+                val existingInvite = findLatest(invite)
+
+                if (existingInvite != null) {
+                    delete(existingInvite)
+                }
+            }
+        }
     }
 }

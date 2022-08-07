@@ -30,9 +30,9 @@ class InvitationsViewModel(
     }
 
     fun accept(invite: CollaborationInvite){
-
+        collaborationInviteRepository.deleteInvitation(invite)
     }
     fun decline(invite: CollaborationInvite){
-
+        collaborationInviteRepository.deleteInvitation(invite)
     }
 }
