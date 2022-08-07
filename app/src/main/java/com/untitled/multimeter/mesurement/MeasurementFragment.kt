@@ -138,6 +138,7 @@ class MeasurementFragment : Fragment() {
     /**
      * Adds mock up data to the [lineGraphView]
      */
+
     private fun mockLineGraphData(){//array:ArrayList<DataPoint>
 
         lineGraphView.animate()

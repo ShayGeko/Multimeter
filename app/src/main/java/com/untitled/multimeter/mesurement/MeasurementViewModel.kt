@@ -19,7 +19,7 @@ import java.util.logging.XMLFormatter
 class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
     val measurementInput = MutableLiveData<DataPoint>()
     val collectionStatus = MutableLiveData(false)
-    var refreshrate:Int = 30
+    var refreshrate:Int = 10
     var delay:Long = (1000/refreshrate).toLong()
     var arraylist:ArrayList<DataPoint> = arrayListOf()
     var current_reading = MutableLiveData<DataPoint>()
@@ -53,11 +53,10 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
             connection = CoroutineScope(Dispatchers.IO).launch {
 
                 while (true) {
-                    var url: URL = URL("http://192.168.4.1/")
-
+                    var url: URL = URL("http://192.168.1.82/")
                     try{
                         val doc: Document = Jsoup
-                            .connect("http://192.168.4.1/")
+                            .connect("http://192.168.1.82/")
                             .timeout(1000)
                             .get()
 
