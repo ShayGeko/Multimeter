@@ -128,19 +128,6 @@ class MeasurementFragment : Fragment() {
      * Adds mock up data to the [lineGraphView]
      */
     private fun mockLineGraphData(){
-        val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf(
-            // on below line we are adding
-            // each point on our x and y axis.
-            DataPoint(0.0, 1.0),
-            DataPoint(0.5, 2.0),
-            DataPoint(1.0, 1.0),
-            DataPoint(1.5, 3.0),
-            DataPoint(2.0, 0.5),
-            DataPoint(2.5, 0.8),
-            DataPoint(3.0, 2.0),
-            DataPoint(3.5, 1.0),
-            DataPoint(4.0, 2.0)
-        ))
         lineGraphView.animate()
         lineGraphView.addSeries(series)
     }
