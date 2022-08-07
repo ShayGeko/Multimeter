@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import com.untitled.multimeter.MainFragment
 import com.untitled.multimeter.MultimeterApp
 import com.untitled.multimeter.RealmViewModelFactory
+import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.createexperiment.CreateExperimentViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
@@ -40,10 +42,8 @@ class MeasurementFragment : Fragment() {
     val Max_Datapoints = 1000000000
     private lateinit var collectBtn : Button
 
-
     //List of user experiments
     private var dataList = ArrayList<ExperimentModel>()
-
     val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf())
 
 
@@ -63,23 +63,25 @@ class MeasurementFragment : Fragment() {
 
         val voltageTextView = t.findViewById<TextView>(R.id.voltage_value)
         // display the text with new data whenever it is received
-        viewModel.measurementInput.observe(requireActivity()) {
-
-            datapoint ->
-
-                voltageTextView.text = "${datapoint.y} V";
-              if(viewModel.isCollecting){
-                  series.appendData(datapoint,true,Max_Datapoints)
-              }
-
-
-
+        viewModel.measurementInput.observe(requireActivity()) { datapoint ->
+            voltageTextView.text = "${datapoint.y} V";
+            if(viewModel.isCollecting){
+                series.appendData(datapoint,true,Max_Datapoints)
+            }
         }
+        viewModel.connection_stat.observe(requireActivity()){
+            if(it == false){
+                val transaction = fragmentManager?.beginTransaction()
+                transaction?.replace(R.id.fragment_container, ConnectionFragment())
+                transaction?.commit()
+                MainFragment.state = MainFragment.CONNECT
+            }
+        }
+
 
         // sett up the graph and add mock data
         setUpLineGraph(t)
         mockLineGraphData()
-        //viewModel.arraylist
 
 
         // checks for button click and changes color and text
@@ -115,9 +117,7 @@ class MeasurementFragment : Fragment() {
 
         //When the Add Measurement button is clicked, opens an alertDialog to choose an experiment to add to
         addMeasurementButton.setOnClickListener {
-
             openAlertDialog(viewModel.arraylist)
-
         }
         return t
     }
@@ -143,7 +143,6 @@ class MeasurementFragment : Fragment() {
 
         lineGraphView.animate()
         lineGraphView.addSeries(series)
-        //series.appendData(DataPoint(3.0,4.0),true,Max_Datapoints)
     }
 
     /**
