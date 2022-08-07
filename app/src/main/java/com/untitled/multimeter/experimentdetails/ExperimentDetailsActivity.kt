@@ -148,6 +148,8 @@ class ExperimentDetailsActivity : AppCompatActivity() {
         //Graph Display Settings + add data
         var maxY = 0.0
         var maxX = 0.0
+        var minY = Double.MAX_VALUE
+        var minX = Double.MAX_VALUE
         var pos = 0
         for (data in allData) {
             val series: LineGraphSeries<DataPoint> = LineGraphSeries<DataPoint>()
@@ -158,18 +160,30 @@ class ExperimentDetailsActivity : AppCompatActivity() {
             for (dataPoint in data) {
                 series.appendData(dataPoint,true,9999999)
                 if (maxY < dataPoint.y) { maxY = dataPoint.y }
-                if (maxX < data.size) { maxX = data.size.toDouble() }
+                if (maxX < dataPoint.x) { maxX = dataPoint.x }
+                if (minY > dataPoint.y) { minY = dataPoint.y }
+                if (minX > dataPoint.x) { minX = dataPoint.x }
             }
             graph.addSeries(series)
             if (pos+1 >= colors.size) { pos = 0 }
             else { pos++ }
         }
-        graph.viewport.isXAxisBoundsManual = true
-        graph.viewport.setMinX(0.0)
-        graph.viewport.setMaxX(maxX+1.0)
-        graph.viewport.isYAxisBoundsManual = true
-        graph.viewport.setMinY(0.0)
-        graph.viewport.setMaxY(maxY)
+        if(minY == Double.MAX_VALUE || minX == Double.MAX_VALUE){
+            graph.viewport.isXAxisBoundsManual = true
+            graph.viewport.setMinX(0.0)
+            graph.viewport.setMaxX(16.0)
+            graph.viewport.isYAxisBoundsManual = true
+            graph.viewport.setMinY(0.0)
+            graph.viewport.setMaxY(16.0)
+        }
+        else{
+            graph.viewport.isXAxisBoundsManual = true
+            graph.viewport.setMinX(minX)
+            graph.viewport.setMaxX(maxX)
+            graph.viewport.isYAxisBoundsManual = true
+            graph.viewport.setMinY(minY)
+            graph.viewport.setMaxY(maxY)
+        }
     }
 
 

@@ -37,11 +37,13 @@ class MeasurementFragment : Fragment() {
     lateinit var lineGraphView: GraphView
     private lateinit var values:ArrayList<DataPoint>
     private lateinit var viewModel: MeasurementViewModel
-
+    val Max_Datapoints = 1000000000
     private lateinit var collectBtn : Button
 
     //List of user experiments
     private var dataList = ArrayList<ExperimentModel>()
+    val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf())
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,13 +56,16 @@ class MeasurementFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MeasurementViewModel::class.java)
 
         // mock the connection to the hardware
-        viewModel.mockConnection()
+        viewModel.realConnection()
 
 
         val voltageTextView = t.findViewById<TextView>(R.id.voltage_value)
         // display the text with new data whenever it is received
-        viewModel.measurementInput.observe(requireActivity()) {
-            voltage -> voltageTextView.text = "${voltage} V";
+        viewModel.measurementInput.observe(requireActivity()) { datapoint ->
+            voltageTextView.text = "${datapoint.y} V";
+            if(viewModel.isCollecting){
+                series.appendData(datapoint,true,Max_Datapoints)
+            }
         }
 
         // sett up the graph and add mock data
@@ -70,6 +75,7 @@ class MeasurementFragment : Fragment() {
 
         // checks for button click and changes color and text
         collectBtn = t.findViewById(R.id.collect_button)
+        val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
         collectBtn.setOnClickListener {
             // keep the state in viewModel so that state is persevered on rotations
             viewModel.changeCollectingStatus()
@@ -77,10 +83,16 @@ class MeasurementFragment : Fragment() {
         // change the button based on the collecting state
         viewModel.collectionStatus.observe(requireActivity()){ isCollecting ->
             if(isCollecting){
+                addMeasurementButton.setBackgroundColor(Color.GRAY)
+                addMeasurementButton.isClickable = false
+                addMeasurementButton.isEnabled = false
                 collectBtn.text = "STOP collecting"
                 collectBtn.setBackgroundColor(Color.RED)
             }
             else{
+                addMeasurementButton.setBackgroundColor(Color.BLUE)
+                addMeasurementButton.isClickable = true
+                addMeasurementButton.isEnabled = true
                 collectBtn.text = "START collecting"
                 collectBtn.setBackgroundColor(Color.GREEN )
             }
@@ -93,9 +105,8 @@ class MeasurementFragment : Fragment() {
         val collectedData = measurementDummyData()
 
         //When the Add Measurement button is clicked, opens an alertDialog to choose an experiment to add to
-        val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
         addMeasurementButton.setOnClickListener {
-            openAlertDialog(collectedData)
+            openAlertDialog(viewModel.arraylist)
         }
         return t
     }
@@ -110,6 +121,7 @@ class MeasurementFragment : Fragment() {
         lineGraphView.viewport.isScalable = true
         lineGraphView.viewport.setScalableY(true)
         lineGraphView.viewport.setScrollableY(true)
+        lineGraphView.onDataChanged(true,true)
     }
 
     /**
