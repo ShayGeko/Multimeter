@@ -38,7 +38,7 @@ class SettingsViewModel(private val userRepository: UserRepository) : ViewModel(
      * @param username new username
      */
     fun updateUsername(username : String) {
-        userRepository.updateUsername(username)
+
     }
 
     /**
@@ -47,7 +47,7 @@ class SettingsViewModel(private val userRepository: UserRepository) : ViewModel(
      * @param email new username
      */
     fun updateEmail(email : String) {
-        userRepository.updateEmail(email)
+
     }
 
 }

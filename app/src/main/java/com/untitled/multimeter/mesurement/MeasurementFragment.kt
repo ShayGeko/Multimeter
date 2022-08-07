@@ -37,11 +37,15 @@ class MeasurementFragment : Fragment() {
     lateinit var lineGraphView: GraphView
     private lateinit var values:ArrayList<DataPoint>
     private lateinit var viewModel: MeasurementViewModel
-
+    val Max_Datapoints = 1000000000
     private lateinit var collectBtn : Button
+
 
     //List of user experiments
     private var dataList = ArrayList<ExperimentModel>()
+
+    val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf())
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,18 +58,28 @@ class MeasurementFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MeasurementViewModel::class.java)
 
         // mock the connection to the hardware
-        viewModel.mockConnection()
+        viewModel.realConnection()
 
 
         val voltageTextView = t.findViewById<TextView>(R.id.voltage_value)
         // display the text with new data whenever it is received
         viewModel.measurementInput.observe(requireActivity()) {
-            voltage -> voltageTextView.text = "${voltage} V";
+
+            datapoint ->
+
+                voltageTextView.text = "${datapoint.y} V";
+              if(viewModel.isCollecting){
+                  series.appendData(datapoint,true,Max_Datapoints)
+              }
+
+
+
         }
 
         // sett up the graph and add mock data
         setUpLineGraph(t)
         mockLineGraphData()
+        //viewModel.arraylist
 
 
         // checks for button click and changes color and text
@@ -110,27 +124,17 @@ class MeasurementFragment : Fragment() {
         lineGraphView.viewport.isScalable = true
         lineGraphView.viewport.setScalableY(true)
         lineGraphView.viewport.setScrollableY(true)
+        lineGraphView.onDataChanged(true,true)
     }
 
     /**
      * Adds mock up data to the [lineGraphView]
      */
-    private fun mockLineGraphData(){
-        val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf(
-            // on below line we are adding
-            // each point on our x and y axis.
-            DataPoint(0.0, 1.0),
-            DataPoint(0.5, 2.0),
-            DataPoint(1.0, 1.0),
-            DataPoint(1.5, 3.0),
-            DataPoint(2.0, 0.5),
-            DataPoint(2.5, 0.8),
-            DataPoint(3.0, 2.0),
-            DataPoint(3.5, 1.0),
-            DataPoint(4.0, 2.0)
-        ))
+    private fun mockLineGraphData(){//array:ArrayList<DataPoint>
+
         lineGraphView.animate()
         lineGraphView.addSeries(series)
+        //series.appendData(DataPoint(3.0,4.0),true,Max_Datapoints)
     }
 
     /**

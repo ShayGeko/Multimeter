@@ -24,9 +24,10 @@
 
     <!-- Settings Activity -->
     <string name="enter_name">Enter Name:</string>
+    <string name="name">Name</string>
     <string name="light_dark_mode">Light/Dark Mode</string>
     <string name="save">save</string>
-    <string name="enter_username">Enter Email:</string>
+    <string name="enter_username">Enter Username:</string>
 
 
 
