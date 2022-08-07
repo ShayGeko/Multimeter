@@ -31,6 +31,8 @@ class InvitationsViewModel(
 
     fun accept(invite: CollaborationInvite){
         collaborationInviteRepository.deleteInvitation(invite)
+        if(invite.receiver != null && invite.experiment != null)
+            experimentRepository.addUserToCollaborators(invite.receiver!!, invite.experiment!!)
     }
     fun decline(invite: CollaborationInvite){
         collaborationInviteRepository.deleteInvitation(invite)
