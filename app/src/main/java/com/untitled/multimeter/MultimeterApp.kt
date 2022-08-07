@@ -13,6 +13,7 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.internal.platform.ensureNeverFrozen
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
+import kotlin.time.Duration.Companion.seconds
 
 class MultimeterApp : Application() {
     val userRepository by lazy {UserRepository()}
@@ -50,6 +51,7 @@ class MultimeterApp : Application() {
                 )
                 val config = SyncConfiguration
                     .Builder(realmApp.currentUser!!, REALM_PARTITION, schema)
+                    .waitForInitialRemoteData(10.seconds)
                     .build()
                 mRealm = Realm.open(config)
 

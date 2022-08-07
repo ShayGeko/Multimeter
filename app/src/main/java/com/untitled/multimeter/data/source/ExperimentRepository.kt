@@ -188,6 +188,7 @@ class ExperimentRepository {
             Log.d(APPLICATION_TAG, "copying experiment to realm")
 
             experiment.measurements = realmListOf()  //measurementsDummyData()
+            experiment.collaborators.add(sender.userName)
             var managedExperiment = copyToRealm(experiment)
 
 
