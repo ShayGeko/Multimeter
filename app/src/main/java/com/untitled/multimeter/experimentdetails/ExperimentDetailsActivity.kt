@@ -168,12 +168,26 @@ class ExperimentDetailsActivity : AppCompatActivity() {
             if (pos+1 >= colors.size) { pos = 0 }
             else { pos++ }
         }
-        graph.viewport.isXAxisBoundsManual = true
-        graph.viewport.setMinX(minX)
-        graph.viewport.setMaxX(maxX)
-        graph.viewport.isYAxisBoundsManual = true
-        graph.viewport.setMinY(minY)
-        graph.viewport.setMaxY(maxY)
+        if(minY == Double.MAX_VALUE || minX == Double.MAX_VALUE){
+
+            graph.viewport.isXAxisBoundsManual = true
+            graph.viewport.setMinX(0.0)
+            graph.viewport.setMaxX(maxX)
+            graph.viewport.isYAxisBoundsManual = true
+            graph.viewport.setMinY(0.0)
+            graph.viewport.setMaxY(maxY)
+
+        }
+        else{
+            graph.viewport.isXAxisBoundsManual = true
+            graph.viewport.setMinX(minX)
+            graph.viewport.setMaxX(maxX)
+            graph.viewport.isYAxisBoundsManual = true
+            graph.viewport.setMinY(minY)
+            graph.viewport.setMaxY(maxY)
+
+        }
+
     }
 
 
