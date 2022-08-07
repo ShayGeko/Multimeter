@@ -99,12 +99,19 @@ class ConnectionFragment : Fragment() {
         }
     }
 
+    /**
+     * Gets the ssid name from the connected network.
+     */
     private fun getSSID(): String {
         val manager = requireActivity().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val info = manager.connectionInfo
         return info.ssid
     }
 
+    /**
+     * Prompts the user to allow location permissions.
+     * Needed for network name.
+     */
     private fun checkLocationPermissions() {
         val context = requireActivity().applicationContext
         if (Build.VERSION.SDK_INT < 23) return

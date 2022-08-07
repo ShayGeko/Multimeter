@@ -1,12 +1,18 @@
 package com.untitled.multimeter
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.wifi.WifiManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.mesurement.MeasurementFragment
+import java.net.InetAddress
 
 /**
  * Main Fragment. This class handles the state of the
@@ -48,22 +54,31 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (state) {
-            CONNECT -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
-            CONNECTED -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
-            MEASURE -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, MeasurementFragment())
-                transaction.commit()
+        if (state == MEASURE) {
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, MeasurementFragment())
+            transaction.commit()
+        } else {
+            state = if (isConnected()) CONNECTED else CONNECT
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, ConnectionFragment())
+            transaction.commit()
+        }
+    }
+
+    /**
+     * Checks whether the user is connected to the internet.
+     */
+    private fun isConnected(): Boolean {
+        val connectionManager = requireActivity().applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectionManager != null) {
+            val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    return true
+                }
             }
         }
+        return false
     }
 }
