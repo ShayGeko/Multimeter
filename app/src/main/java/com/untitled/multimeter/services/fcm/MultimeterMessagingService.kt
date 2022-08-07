@@ -23,17 +23,16 @@ class MultimeterMessagingService : FirebaseMessagingService() {
 
 
         val intent = Intent(this, ExperimentDetailsActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             val experimentId = remoteMessage.data["experiment_id"]
 
             Log.d(TAG, "Message data payload: $experimentId")
-            intent.putExtra("id", experimentId)
+            intent.putExtra("experiment_id", experimentId)
 
         }
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val channelId = getString(R.string.default_notification_channel_id)

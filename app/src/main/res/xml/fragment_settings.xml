@@ -20,11 +20,11 @@
             tools:visibility="visible" />
 
         <EditTextPreference
-            android:id="@+id/editTextEmail"
-            android:inputType="textEmailAddress"
-            android:key="email"
-            android:summary="Enter your email"
-            android:title="@string/email"
+            android:id="@+id/editTextName"
+            android:inputType="textPersonName"
+            android:key="name"
+            android:summary="Enter your name"
+            android:title="@string/name"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
