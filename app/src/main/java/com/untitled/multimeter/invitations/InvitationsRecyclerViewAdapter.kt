@@ -2,11 +2,13 @@ package com.untitled.multimeter.invitations
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.untitled.multimeter.MultimeterApp.Companion.APPLICATION_TAG
 import com.untitled.multimeter.data.model.CollaborationInvite
 import com.untitled.multimeter.experimentdetails.ExperimentDetailsActivity
 import com.untitled.multimeter.databinding.FragmentInvitationsBinding
@@ -110,7 +112,31 @@ class InvitationsRecyclerViewAdapter(
     }
 
     fun updateData(updates: UpdatedResults<CollaborationInvite>){
-        notifyItemChanged(0)
+        if(updates.changes.isNotEmpty()){
+            for(index in updates.changes){
+                Log.d(APPLICATION_TAG, "change: ${updates.list[index].experiment?.title} at $index")
+                if(index >= list.size){
+                    list.add(updates.list[index])
+                    notifyItemInserted(index)
+                }
+                else notifyItemChanged(index)
+            }
+
+        }
+        if(updates.insertions.isNotEmpty()){
+            for(index in updates.insertions){
+                list.add(index, updates.list[index])
+                Log.d(APPLICATION_TAG, "new invite: ${updates.list[index].experiment?.title}")
+                notifyItemInserted(index)
+            }
+        }
+        if(updates.deletions.isNotEmpty()){
+            for(index in updates.deletions){
+                list.removeAt(index)
+                Log.d(APPLICATION_TAG, "invitation deleted")
+                notifyItemRemoved(index)
+            }
+        }
     }
 
     fun setInitialData(list : RealmList<CollaborationInvite>){

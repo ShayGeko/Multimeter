@@ -24,8 +24,6 @@ import kotlin.collections.ArrayList
  * A fragment representing a list of Items.
  */
 class InvitationsFragment : Fragment() {
-    private var invitationsList = ArrayList<Experiment>()
-    private var invitedExperimentsList = ArrayList<ExperimentModel>()
     private lateinit var viewModel: InvitationsViewModel
 
     private lateinit var invitationsAdapter : InvitationsRecyclerViewAdapter
