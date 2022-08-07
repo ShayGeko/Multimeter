@@ -54,22 +54,14 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (state) {
-            MEASURE -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, MeasurementFragment())
-                transaction.commit()
-            }
-            CONNECT -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
-            CONNECTED -> {
-                val transaction = childFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, ConnectionFragment())
-                transaction.commit()
-            }
+        if (state == MEASURE) {
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, MeasurementFragment())
+            transaction.commit()
+        } else {
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, ConnectionFragment())
+            transaction.commit()
         }
     }
 }
