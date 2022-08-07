@@ -84,6 +84,7 @@ class MeasurementFragment : Fragment() {
 
         // checks for button click and changes color and text
         collectBtn = t.findViewById(R.id.collect_button)
+        val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
         collectBtn.setOnClickListener {
             // keep the state in viewModel so that state is persevered on rotations
             viewModel.changeCollectingStatus()
@@ -91,10 +92,16 @@ class MeasurementFragment : Fragment() {
         // change the button based on the collecting state
         viewModel.collectionStatus.observe(requireActivity()){ isCollecting ->
             if(isCollecting){
+                addMeasurementButton.setBackgroundColor(Color.GRAY)
+                addMeasurementButton.isClickable = false
+                addMeasurementButton.isEnabled = false
                 collectBtn.text = "STOP collecting"
                 collectBtn.setBackgroundColor(Color.RED)
             }
             else{
+                addMeasurementButton.setBackgroundColor(Color.BLUE)
+                addMeasurementButton.isClickable = true
+                addMeasurementButton.isEnabled = true
                 collectBtn.text = "START collecting"
                 collectBtn.setBackgroundColor(Color.GREEN )
             }
@@ -107,9 +114,10 @@ class MeasurementFragment : Fragment() {
         val collectedData = measurementDummyData()
 
         //When the Add Measurement button is clicked, opens an alertDialog to choose an experiment to add to
-        val addMeasurementButton = t.findViewById<Button>(R.id.dummy_measurement_button)
         addMeasurementButton.setOnClickListener {
-            openAlertDialog(collectedData)
+
+            openAlertDialog(viewModel.arraylist)
+
         }
         return t
     }

@@ -69,7 +69,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 
                         if(isCollecting){
                             arraylist.add(datapoint)
-                            x_value += (delay/1000.0)
+                            x_value += ((delay)/1000.0).toDouble()
                         }
                         delay(delay)
 
