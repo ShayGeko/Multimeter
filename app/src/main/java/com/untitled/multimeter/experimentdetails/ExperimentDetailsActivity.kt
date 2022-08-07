@@ -172,10 +172,10 @@ class ExperimentDetailsActivity : AppCompatActivity() {
 
             graph.viewport.isXAxisBoundsManual = true
             graph.viewport.setMinX(0.0)
-            graph.viewport.setMaxX(maxX)
+            graph.viewport.setMaxX(16.0)
             graph.viewport.isYAxisBoundsManual = true
             graph.viewport.setMinY(0.0)
-            graph.viewport.setMaxY(maxY)
+            graph.viewport.setMaxY(16.0)
 
         }
         else{
