@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -59,17 +61,29 @@ class ConnectionFragment : Fragment() {
      * Handles state of connection fragment on resume.
      */
     override fun onResume() {
-        if (MainFragment.state == MainFragment.CONNECTED) {
+        if (isConnected()) MainFragment.state = MainFragment.CONNECTED else MainFragment.state = MainFragment.CONNECT
 
-            // Get SSID from Connected Network
-            val ssid = getSSID()
-            val connectionUpdate = "Connected to: $ssid"
-            connectionStatusText.text = "Connected"
-            connectionHelpText.text = connectionUpdate
-            connectionButton.text = "Change Devices"
-            connectionButton.setBackgroundColor(Color.GRAY)
-            connectionStatusText.setTextColor(Color.parseColor("#4BB543"))
-            measureButton.isVisible = true
+        when (MainFragment.state) {
+            MainFragment.CONNECT -> {
+                connectionStatusText.text = getString(R.string.connection_status)
+                connectionHelpText.text = getString(R.string.connection_help)
+                connectionButton.text = getString(R.string.connection_button)
+                connectionButton.setBackgroundColor(Color.parseColor("#FF018786"))
+                connectionStatusText.setTextColor(Color.parseColor("#FF9494"))
+                measureButton.isVisible = false
+            }
+            MainFragment.CONNECTED -> {
+
+                // Get SSID from Connected Network
+                val ssid = getSSID()
+                val connectionUpdate = "Connected to: $ssid"
+                connectionStatusText.text = "Connected"
+                connectionHelpText.text = connectionUpdate
+                connectionButton.text = "Change Devices"
+                connectionButton.setBackgroundColor(Color.GRAY)
+                connectionStatusText.setTextColor(Color.parseColor("#4BB543"))
+                measureButton.isVisible = true
+            }
         }
         super.onResume()
     }
@@ -81,7 +95,6 @@ class ConnectionFragment : Fragment() {
         connectionButton = root.findViewById(R.id.connection_btn)
         connectionButton.setOnClickListener {
             startActivity(Intent(Settings.ACTION_SETTINGS))
-            MainFragment.state = MainFragment.CONNECTED
         }
     }
 
@@ -100,23 +113,38 @@ class ConnectionFragment : Fragment() {
     }
 
     /**
+     * Prompts the user to allow location permissions.
+     * Needed for network name.
+     */
+    private fun checkLocationPermissions() {
+        if (Build.VERSION.SDK_INT < 23) return
+        if (ContextCompat.checkSelfPermission(requireActivity().applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    /**
+     * Checks whether the user is connected to the internet.
+     */
+    private fun isConnected(): Boolean {
+        val connectionManager = requireActivity().applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectionManager != null) {
+            val capable = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
+            if (capable != null) {
+                if (capable.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Gets the ssid name from the connected network.
      */
     private fun getSSID(): String {
         val manager = requireActivity().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val info = manager.connectionInfo
         return info.ssid
-    }
-
-    /**
-     * Prompts the user to allow location permissions.
-     * Needed for network name.
-     */
-    private fun checkLocationPermissions() {
-        val context = requireActivity().applicationContext
-        if (Build.VERSION.SDK_INT < 23) return
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
-        }
     }
 }

@@ -54,31 +54,22 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (state == MEASURE) {
-            val transaction = childFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, MeasurementFragment())
-            transaction.commit()
-        } else {
-            state = if (isConnected()) CONNECTED else CONNECT
-            val transaction = childFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, ConnectionFragment())
-            transaction.commit()
-        }
-    }
-
-    /**
-     * Checks whether the user is connected to the internet.
-     */
-    private fun isConnected(): Boolean {
-        val connectionManager = requireActivity().applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (connectionManager != null) {
-            val capabilities = connectionManager.getNetworkCapabilities(connectionManager.activeNetwork)
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    return true
-                }
+        when (state) {
+            MEASURE -> {
+                val transaction = childFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, MeasurementFragment())
+                transaction.commit()
+            }
+            CONNECT -> {
+                val transaction = childFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, ConnectionFragment())
+                transaction.commit()
+            }
+            CONNECTED -> {
+                val transaction = childFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_container, ConnectionFragment())
+                transaction.commit()
             }
         }
-        return false
     }
 }
