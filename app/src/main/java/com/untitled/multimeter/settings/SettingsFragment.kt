@@ -21,7 +21,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.fragment_settings, rootKey)
 
-        //get preferences
+        //get all preferences
         val username = findPreference<EditTextPreference>("username")
         val email = findPreference<EditTextPreference>("email")
         val themeSwitch: SwitchPreferenceCompat? = findPreference("theme mode")
