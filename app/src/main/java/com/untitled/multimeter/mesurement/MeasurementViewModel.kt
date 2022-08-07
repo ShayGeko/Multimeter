@@ -24,9 +24,10 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
     var arraylist:ArrayList<DataPoint> = arrayListOf()
     var current_reading = MutableLiveData<DataPoint>()
     var x_value:Double = 0.0
+
     lateinit var connection : Job
 
-     var isCollecting = false
+    var isCollecting = false
     private var isConnectionOn = false
 
     /**
@@ -46,15 +47,12 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 //        }
 //    }
 
-
     fun realConnection(){
         var volt = 0F;
         if(!isConnectionOn) {
             connection = CoroutineScope(Dispatchers.IO).launch {
-
                 while (true) {
                     var url: URL = URL("http://192.168.4.1/")
-
                     try{
                         val doc: Document = Jsoup
                             .connect("http://192.168.4.1/")
@@ -62,9 +60,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
                             .get()
 
                         val links = doc.select("h1")
-
                         val datapoint = DataPoint(x_value,(links[0].text()).toDouble())
-
                         measurementInput.postValue(datapoint)
 
                         if(isCollecting){
@@ -72,34 +68,24 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
                             x_value += ((delay)/1000.0).toDouble()
                         }
                         delay(delay)
-
-
                     }
                     catch (exception:Exception){
                         recall()
                         break
-
                     }
-
                 }
             }
             isConnectionOn = true;
         }
     }
 
-
     suspend fun recall(){
-
         delay(500)
         withContext(Dispatchers.Main){
             isConnectionOn = false
             realConnection()
         }
-
     }
-
-
-
 
     /**
      * Inverts the collecting status (collecting - not collecting)

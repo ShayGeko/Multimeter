@@ -40,10 +40,8 @@ class MeasurementFragment : Fragment() {
     val Max_Datapoints = 1000000000
     private lateinit var collectBtn : Button
 
-
     //List of user experiments
     private var dataList = ArrayList<ExperimentModel>()
-
     val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf())
 
 
@@ -63,23 +61,16 @@ class MeasurementFragment : Fragment() {
 
         val voltageTextView = t.findViewById<TextView>(R.id.voltage_value)
         // display the text with new data whenever it is received
-        viewModel.measurementInput.observe(requireActivity()) {
-
-            datapoint ->
-
-                voltageTextView.text = "${datapoint.y} V";
-              if(viewModel.isCollecting){
-                  series.appendData(datapoint,true,Max_Datapoints)
-              }
-
-
-
+        viewModel.measurementInput.observe(requireActivity()) { datapoint ->
+            voltageTextView.text = "${datapoint.y} V";
+            if(viewModel.isCollecting){
+                series.appendData(datapoint,true,Max_Datapoints)
+            }
         }
 
         // sett up the graph and add mock data
         setUpLineGraph(t)
         mockLineGraphData()
-        //viewModel.arraylist
 
 
         // checks for button click and changes color and text
@@ -115,9 +106,7 @@ class MeasurementFragment : Fragment() {
 
         //When the Add Measurement button is clicked, opens an alertDialog to choose an experiment to add to
         addMeasurementButton.setOnClickListener {
-
             openAlertDialog(viewModel.arraylist)
-
         }
         return t
     }
@@ -138,11 +127,22 @@ class MeasurementFragment : Fragment() {
     /**
      * Adds mock up data to the [lineGraphView]
      */
-    private fun mockLineGraphData(){//array:ArrayList<DataPoint>
-
+    private fun mockLineGraphData(){
+        val series: LineGraphSeries<DataPoint> = LineGraphSeries(arrayOf(
+            // on below line we are adding
+            // each point on our x and y axis.
+            DataPoint(0.0, 1.0),
+            DataPoint(0.5, 2.0),
+            DataPoint(1.0, 1.0),
+            DataPoint(1.5, 3.0),
+            DataPoint(2.0, 0.5),
+            DataPoint(2.5, 0.8),
+            DataPoint(3.0, 2.0),
+            DataPoint(3.5, 1.0),
+            DataPoint(4.0, 2.0)
+        ))
         lineGraphView.animate()
         lineGraphView.addSeries(series)
-        //series.appendData(DataPoint(3.0,4.0),true,Max_Datapoints)
     }
 
     /**
