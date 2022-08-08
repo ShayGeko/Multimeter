@@ -41,13 +41,14 @@
         >
 
     </com.jjoe64.graphview.GraphView>
+
     <Button
+        android:id="@+id/collect_button"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="START collecting"
-        android:backgroundTint="#00FF00"
-        android:id="@+id/collect_button"
-        >
+        android:backgroundTint="?attr/colorSecondary"
+        android:text="START collecting">
 
     </Button>
 
