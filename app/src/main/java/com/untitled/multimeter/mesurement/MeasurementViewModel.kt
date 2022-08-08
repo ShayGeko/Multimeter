@@ -24,7 +24,7 @@ import java.util.logging.XMLFormatter
 class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
     val measurementInput = MutableLiveData<DataPoint>()
     val collectionStatus = MutableLiveData(false)
-    var refreshrate:Int = 10
+    var refreshrate:Float = 0.5F
     var delay:Long = (1000/refreshrate).toLong()
     var arraylist:ArrayList<DataPoint> = arrayListOf()
     var current_reading = MutableLiveData<DataPoint>()
@@ -136,7 +136,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
         return experimentRepository.getExperiment(objectId)
     }
 
-    fun setRefreshRate(rate: Int) {
+    fun setRefreshRate(rate: Float) {
         refreshrate = rate
     }
 }
