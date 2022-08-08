@@ -1,6 +1,9 @@
 package com.untitled.multimeter.settings
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SettingsViewModel(private val userRepository: UserRepository) : ViewModel(){
+class SettingsViewModel(private val userRepository: UserRepository, application: Application) : AndroidViewModel(application) {
+    val sharedPreferences = application.getSharedPreferences("theme", Context.MODE_PRIVATE)
 
     /**
      * logs current user out, removes device registration token from the db
@@ -51,13 +55,14 @@ class SettingsViewModel(private val userRepository: UserRepository) : ViewModel(
         userRepository.updateUsername(username)
     }
 
-    /**
-     * Updates the user's email
-     *
-     * @param email new username
-     */
-    fun updateEmail(email : String) {
-        userRepository.updateEmail(email)
+    fun getTheme() : Int {
+        return sharedPreferences.getInt("theme", 1)
+    }
+
+    fun setTheme(int: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt("theme", int)
+        editor.apply()
     }
 
 }

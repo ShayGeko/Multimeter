@@ -1,5 +1,6 @@
 package com.untitled.multimeter.settings
 
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -14,11 +15,14 @@ import com.untitled.multimeter.RealmViewModelFactory
 import kotlin.system.exitProcess
 import com.untitled.multimeter.mesurement.MeasurementViewModel
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var viewModel: SettingsViewModel
     private lateinit var measurementViewModel: MeasurementViewModel
+
+    private lateinit var themeSwitch: SwitchPreferenceCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +36,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         //get all preferences
         val username = findPreference<EditTextPreference>("username")
-        val themeSwitch: SwitchPreferenceCompat? = findPreference("theme mode")
+        themeSwitch = findPreference("theme mode")!!
         val frequency = findPreference<ListPreference>("frequency")
         val logoutBtn = findPreference<Preference>("logout")
 
@@ -43,8 +47,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         //set listener for theme switch
-        themeSwitch?.setOnPreferenceChangeListener { _,_ ->
-            checkTheme(themeSwitch.isChecked)
+        themeSwitch.setOnPreferenceChangeListener { _, _ ->
+            MainScope().launch {
+                checkTheme(themeSwitch.isChecked)
+                cancel()
+            }
             true
         }
 
@@ -52,6 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             MainScope().launch {
                 //use a coroutine task to set rate after internal state changes
                 measurementViewModel.setRefreshRate(frequency.value.toFloat())
+                cancel()
             }
             true
         }
@@ -64,10 +72,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun checkTheme(input: Boolean) {
         if (input) {
-            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+            viewModel.setTheme(2)
         }
         else {
-            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+            viewModel.setTheme(1)
         }
     }
 

@@ -4,6 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -11,6 +14,8 @@ import com.untitled.multimeter.experiments.ExperimentsFragment
 import com.untitled.multimeter.invitations.InvitationsFragment
 import com.untitled.multimeter.login.LoginActivity
 import com.untitled.multimeter.settings.SettingsFragment
+import com.untitled.multimeter.settings.SettingsViewModel
+import io.realm.kotlin.mongodb.App
 
 class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +32,14 @@ class MainMenuActivity : AppCompatActivity() {
         else {
             Log.d(MultimeterApp.APPLICATION_TAG, user.toString())
         }
+
+        //check for theme
+        val viewModelFactory = RealmViewModelFactory(this.application)
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(SettingsViewModel::class.java)
+        if (viewModel.getTheme() == 2) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+        }
+
         //Get xml views
         val tabLayout = findViewById<TabLayout>(R.id.main_menu_tablayout)
         val viewPager2 = findViewById<ViewPager2>(R.id.view_pager2)

@@ -31,7 +31,7 @@ class RealmViewModelFactory(
         if(modelClass.isAssignableFrom(MeasurementViewModel::class.java))
             return MeasurementViewModel((application as MultimeterApp).userRepository, application.experimentRepository, application) as T
         if(modelClass.isAssignableFrom(SettingsViewModel::class.java))
-            return SettingsViewModel((application as MultimeterApp).userRepository) as T
+            return SettingsViewModel((application as MultimeterApp).userRepository, application) as T
 
 
         throw IllegalArgumentException("Unknown ViewModel class")
