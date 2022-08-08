@@ -1,5 +1,6 @@
 package com.untitled.multimeter.mesurement
 
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -133,5 +134,9 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 
     fun getExperiment(objectId: ObjectId): LiveData<Result<Experiment>> {
         return experimentRepository.getExperiment(objectId)
+    }
+
+    fun setRefreshRate(rate: Int) {
+        refreshrate = rate
     }
 }
