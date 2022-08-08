@@ -60,7 +60,6 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 //    }
 
     fun realConnection(){
-        delay = (1000/sharedPreferences.getFloat("refresh rate", 0.5F)).toLong()
         var volt = 0F;
         if(!isConnectionOn) {
             connection = CoroutineScope(Dispatchers.IO).launch {
@@ -84,6 +83,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
                             x_value += ((delay)/1000.0).toDouble()
                         }
                         delay(delay)
+                        Log.d("secondD",delay.toString())
                     }
                     catch (exception:Exception){
                        if(exception is SocketTimeoutException){
@@ -119,7 +119,11 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
     override fun onCleared() {
         super.onCleared()
 
-        connection.cancel()
+        if(this::connection.isInitialized){
+            connection.cancel()
+        }
+
+
         isConnectionOn = false;
     }
 
@@ -147,5 +151,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
         val editor = sharedPreferences.edit()
         editor.putFloat("refresh rate", rate)
         editor.apply()
+        delay = (1000/rate).toLong()
+        Log.d("something", delay.toString())
     }
 }
