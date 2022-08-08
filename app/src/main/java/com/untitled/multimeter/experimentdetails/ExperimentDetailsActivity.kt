@@ -21,6 +21,7 @@ import com.untitled.multimeter.RealmViewModelFactory
 import io.realm.kotlin.types.ObjectId
 import com.untitled.multimeter.data.model.Experiment
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
+import kotlinx.android.synthetic.main.activity_create_account.*
 import java.text.DateFormatSymbols
 import java.util.*
 import kotlin.collections.ArrayList
@@ -235,55 +236,62 @@ class ExperimentDetailsActivity : AppCompatActivity() {
      * @param allData data to be displayed
      */
     private fun displayTableRows(tableLayoutView : TableLayout, allData: ArrayList<ArrayList<DataPoint>>){
-        val usedXCoordinates = HashSet<Double>()
+        val usedXCoordinates = ArrayList<Double>()
 
+        //Get all x-coordinates in the entire dataset
         for (data in allData) {
             for (dataPoint in data) {
-                //if already used x coordinate skip
-                if (dataPoint.x in usedXCoordinates) {
-                    break
+
+                //if x is not yet used add to usedXCoordinates
+                if (dataPoint.x !in usedXCoordinates) {
+                    usedXCoordinates.add(dataPoint.x)
                 }
-                usedXCoordinates.add(dataPoint.x)
+            }
+        }
 
-                val row = TableRow(this)
-                val time = TextView(this)
-                val y = TextView(this)
+        usedXCoordinates.sort()
+        for (xCoordinate in usedXCoordinates) {
 
-                //Add entry for this datapoint
-                time.text = dataPoint.x.toString()
-                time.gravity = Gravity.CENTER
-                y.text = dataPoint.y.toString()
-                y.gravity = Gravity.CENTER
-                row.addView(time)
-                row.addView(y)
+            val row = TableRow(this)
+            val time = TextView(this)
+            val y = TextView(this)
 
-                //find other datapoints with the same x value and put in same row
-                for (nestedData in allData.subList(allData.indexOf(data)+1,allData.size)) {
-                    var foundEntry = false
-                    for (nestedDataPoint in nestedData) {
-                        if (nestedDataPoint.x == dataPoint.x) {
-                            var newVal = TextView(this)
-                            newVal.text = nestedDataPoint.y.toString()
-                            newVal.gravity = Gravity.CENTER
-                            row.addView(newVal)
-                            foundEntry = true
-                        }
-                    }
-                    if (!foundEntry) {
+            //Set x column (time)
+            time.text = String.format("%.2f", xCoordinate)
+            time.gravity = Gravity.CENTER
+            row.addView(time)
+
+            //Get all dataPoints with the same x as xCoordinate
+            for (data in allData) {
+                var foundEntry = false
+                for (dataPoint in data) {
+
+                    //If there is a datapoint in this measurement that matches the x make a textview with value
+                    if (dataPoint.x == xCoordinate) {
                         var newVal = TextView(this)
-                        newVal.text = "N/A"
+                        newVal.text = dataPoint.y.toString()
                         newVal.gravity = Gravity.CENTER
                         row.addView(newVal)
+                        foundEntry = true
                     }
                 }
-                tableLayoutView.addView(
-                    row,
-                    TableLayout.LayoutParams(
-                        TableLayout.LayoutParams.MATCH_PARENT,
-                        TableLayout.LayoutParams.WRAP_CONTENT
-                    )
-                )
+                //If there is no datapoint in this measurement that matches the x make a textview N/A
+                if (!foundEntry) {
+                    var newVal = TextView(this)
+                    newVal.text = "N/A"
+                    newVal.gravity = Gravity.CENTER
+                    row.addView(newVal)
+                }
             }
+
+            //Add to table
+            tableLayoutView.addView(
+                row,
+                TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
         }
     }
 
