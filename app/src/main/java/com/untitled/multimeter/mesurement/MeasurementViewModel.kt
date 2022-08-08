@@ -61,6 +61,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 
     fun realConnection(){
         delay = (1000/sharedPreferences.getFloat("refresh rate", 0.5F)).toLong()
+        Log.i("delay test", delay.toString())
         var volt = 0F;
         if(!isConnectionOn) {
             connection = CoroutineScope(Dispatchers.IO).launch {
