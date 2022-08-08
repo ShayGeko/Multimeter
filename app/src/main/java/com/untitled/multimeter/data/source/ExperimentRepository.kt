@@ -15,6 +15,7 @@ import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.mongodb.syncSession
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmList
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.exp
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Repository for Experiments
@@ -120,6 +122,7 @@ class ExperimentRepository {
         initRealm()
         val result = MutableLiveData<Result<Experiment>> ()
         CoroutineScope(Dispatchers.IO).launch {
+            mRealm.syncSession.downloadAllServerChanges(2.seconds)
             runCatching {
                 val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentId)
                 val experiment = experimentList.first().find() ?: throw RealmObjectNotFoundException("Experiment not found")

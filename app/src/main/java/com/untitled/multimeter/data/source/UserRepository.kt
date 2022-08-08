@@ -21,11 +21,8 @@ import io.realm.kotlin.mongodb.syncSession
 import io.realm.kotlin.query.RealmQuery
 import io.realm.kotlin.query.find
 import io.realm.kotlin.types.ObjectId
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -56,8 +53,25 @@ class UserRepository {
                 // login, get the user with matched credentials or throw an exception
                 // output will be wrapped in Result, because of runCatching{}
                 realmApp.login(credentials)
+                initRealm()
+                mRealm.syncSession.downloadAllServerChanges(3.seconds)
+                var found = false
+                var cnt = 0
+                lateinit var userInfo: UserInfo
 
-                getCurrentUserInfoBlocking()
+                // wait for data to load from the server, keep querying for user data
+                // timeout after 5 attempts
+                while(!found && cnt < 5) {
+                    ++cnt
+                    try {
+                        userInfo =  getCurrentUserInfoBlocking()
+                        found = true
+                    } catch (e: RealmObjectNotFoundException) {
+                        delay(2.seconds)
+                    }
+                }
+
+                return@runCatching userInfo
             } // if no exception was thrown, propagate the successful Result
                 .onSuccess { user: UserInfo ->
                     loginResult.postValue(Result.success(user))
@@ -260,7 +274,7 @@ class UserRepository {
 
         // get id of the logged in user
         val userId = ObjectId.from(realmApp.currentUser!!.identity)
-        mRealm.syncSession.downloadAllServerChanges(1.seconds)
+        mRealm.syncSession.downloadAllServerChanges(2.seconds)
         Log.d(APPLICATION_TAG, "looking for userinfo for $userId")
         val result = mRealm
             .query<UserInfo>("_id == $0", userId)
