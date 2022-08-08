@@ -29,6 +29,7 @@ class MultimeterMessagingService : FirebaseMessagingService() {
 
             Log.d(TAG, "Message data payload: $experimentId")
             intent.putExtra("id", experimentId)
+            intent.putExtra("ReadOnly", 1)
 
         }
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
