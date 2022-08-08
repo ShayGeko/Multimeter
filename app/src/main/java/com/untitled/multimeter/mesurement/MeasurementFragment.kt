@@ -216,11 +216,6 @@ class MeasurementFragment : Fragment() {
                             }
                         }
                         dialog.dismiss()
-                        val refreshFrag: FragmentTransaction = requireFragmentManager().beginTransaction()
-                        if (Build.VERSION.SDK_INT >= 26) {
-                            refreshFrag.setReorderingAllowed(false)
-                        }
-                        refreshFrag.detach(this).attach(this).commit()
                     }
                 }
 
