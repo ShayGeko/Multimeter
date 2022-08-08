@@ -31,7 +31,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
     val collectionStatus = MutableLiveData(false)
     val sharedPreferences = application.getSharedPreferences("refresh rate", MODE_PRIVATE)
     var refreshrate:Float = 0.5F
-    var delay:Long = (1000/refreshrate).toLong()
+    var delay:Long = (1000/sharedPreferences.getFloat("refresh rate", 0.5F)).toLong()
     var arraylist:ArrayList<DataPoint> = arrayListOf()
     var current_reading = MutableLiveData<DataPoint>()
     var x_value:Double = 0.0
