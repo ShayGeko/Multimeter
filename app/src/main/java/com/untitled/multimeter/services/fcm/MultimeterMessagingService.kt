@@ -21,6 +21,7 @@ class MultimeterMessagingService : FirebaseMessagingService() {
 
 
         val intent = Intent(this, ExperimentDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
@@ -30,7 +31,8 @@ class MultimeterMessagingService : FirebaseMessagingService() {
             intent.putExtra("id", experimentId)
 
         }
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -48,11 +50,8 @@ class MultimeterMessagingService : FirebaseMessagingService() {
                 .setContentTitle(it.title)
                 .setContentText(it.body)
         }
+
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        // Since android Oreo notification channel is needed.
-
-        // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -69,23 +68,7 @@ class MultimeterMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
     }
 
-    private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
-    }
-
-    private fun sendRegistrationToServer(token: String?) {
-        // TODO: Implement this method to send token to your app server.
-        Log.d(TAG, "sendRegistrationTokenToServer($token)")
-    }
-
     companion object {
         private const val TAG = MultimeterApp.APPLICATION_TAG
     }
-
-//    internal class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
-//        override fun doWork(): Result {
-//            // TODO(developer): add long running task here.
-//            return Result.success()
-//        }
-//    }
 }
