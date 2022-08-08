@@ -1,8 +1,11 @@
 package com.untitled.multimeter.mesurement
 
+import android.app.Application
+import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,9 +24,12 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.logging.XMLFormatter
 
-class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository) : ViewModel() {
+class MeasurementViewModel(private val userRepository: UserRepository, private val experimentRepository: ExperimentRepository,
+                           application: Application
+                           ) : AndroidViewModel(application) {
     val measurementInput = MutableLiveData<DataPoint>()
     val collectionStatus = MutableLiveData(false)
+    val sharedPreferences = application.getSharedPreferences("refresh rate", MODE_PRIVATE)
     var refreshrate:Float = 0.5F
     var delay:Long = (1000/refreshrate).toLong()
     var arraylist:ArrayList<DataPoint> = arrayListOf()
@@ -54,6 +60,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 //    }
 
     fun realConnection(){
+        delay = (1000/sharedPreferences.getFloat("refresh rate", 0.5F)).toLong()
         var volt = 0F;
         if(!isConnectionOn) {
             connection = CoroutineScope(Dispatchers.IO).launch {
@@ -137,6 +144,8 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
     }
 
     fun setRefreshRate(rate: Float) {
-        refreshrate = rate
+        val editor = sharedPreferences.edit()
+        editor.putFloat("refresh rate", rate)
+        editor.apply()
     }
 }
