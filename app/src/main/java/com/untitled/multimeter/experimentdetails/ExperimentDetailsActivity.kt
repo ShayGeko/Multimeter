@@ -11,6 +11,7 @@ import android.view.View.generateViewId
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.jjoe64.graphview.GraphView

@@ -60,6 +60,7 @@ class MeasurementViewModel(private val userRepository: UserRepository, private v
 //    }
 
     fun realConnection(){
+
         var volt = 0F;
         if(!isConnectionOn) {
             connection = CoroutineScope(Dispatchers.IO).launch {
