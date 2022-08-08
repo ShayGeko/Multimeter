@@ -11,6 +11,7 @@ import com.untitled.multimeter.MultimeterApp.Companion.getRealmInstance
 import com.untitled.multimeter.MultimeterApp.Companion.realmApp
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.model.ExperimentModel
+import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.realmListOf
@@ -50,22 +51,19 @@ class ExperimentRepository {
             val userExperiments = ArrayList<ExperimentModel>()
             runCatching {
 
-                mRealm.writeBlocking {
-
                     //For each experimentObjectId, get the corresponding experiment
                     if (userExperimentList != null && userExperimentList.isNotEmpty()) {
                         for (experimentObjectId in userExperimentList) {
-                            val experimentQuery: RealmQuery<Experiment> = this.query<Experiment>("_id == $0", experimentObjectId)
-                            val queryResult = experimentQuery.find()
-                            if (queryResult.isNotEmpty()) {
-                                val experimentInfo = queryResult[0]
+                            val experimentQuery: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentObjectId)
+                            val queryResult = experimentQuery.first().find()
+                            if (queryResult != null) {
+                                val experimentInfo = queryResult
                                 userExperiments.add(experimentToExperimentDataClass(experimentInfo))
                             }
                             else {
                                 Log.e("ExperimentRepository", "ObjectId "+experimentObjectId+" does not exist")
                             }
                         }
-                    }
                 }
             }.onSuccess {
                 result.postValue(Result.success(userExperiments))
@@ -88,9 +86,10 @@ class ExperimentRepository {
         runCatching {
             val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
 
+            Log.d("getAllExperimentObjectIdsForUser", "looking for $userId UserInfo")
             //Get the current users entry
-            val userQuery: RealmQuery<UserInfo> = mRealm.query<UserInfo>("_id == $0", userId)
-            val userInfo = userQuery.find()[0]
+            val userQuery: RealmQuery<UserInfo> = mRealm.query("_id == $0", userId)
+            val userInfo = userQuery.first().find() ?: throw RealmObjectNotFoundException("UserInfo not found")
             val userExperiments = userInfo.experiments
 
             //for each experiment ObjectId in userInfo, add to an array and return
@@ -123,7 +122,7 @@ class ExperimentRepository {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 val experimentList: RealmQuery<Experiment> = mRealm.query<Experiment>("_id == $0", experimentId)
-                val experiment = experimentList.find()[0]
+                val experiment = experimentList.first().find() ?: throw RealmObjectNotFoundException("Experiment not found")
                 return@runCatching experiment
             }.onSuccess { experiment ->
                 result.postValue(Result.success(experiment))

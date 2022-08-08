@@ -99,7 +99,7 @@ class CreateExperimentActivity : AppCompatActivity() {
 
         // make sure title is non-empty:
         if(title.isEmpty()){
-            Toast.makeText(this, "Title should not be empty", Toast.LENGTH_LONG)
+            Toast.makeText(this, "Title should not be empty", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -111,7 +111,7 @@ class CreateExperimentActivity : AppCompatActivity() {
                     RealmInstant.from(Instant.now().epochSecond,Instant.now().nano)
                 }
                 else {
-                    Log.e("CreateExperimentActivity","Warning: Build.VERSION.SDK_INT < 26. Defaulting Time to epochSeconds 0")
+                    Log.w("CreateExperimentActivity","Warning: Build.VERSION.SDK_INT < 26. Defaulting Time to epochSeconds 0")
                     RealmInstant.from(0,0)
                 }
             this.collaborators = RealmListString(experimentCollaborators)
@@ -135,6 +135,7 @@ class CreateExperimentActivity : AppCompatActivity() {
             }
             result.onFailure { error ->
                 Log.e("CreateExperimentActivity", "Insert Failed: " + error.toString())
+                error.printStackTrace()
                 finish()
             }
         }

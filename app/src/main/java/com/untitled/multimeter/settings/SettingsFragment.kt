@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
 import com.untitled.multimeter.R
 import com.untitled.multimeter.RealmViewModelFactory
+import kotlin.system.exitProcess
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var viewModel: SettingsViewModel
@@ -63,8 +64,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun logout(){
-        viewModel.logout()
+        viewModel.logout().observe(this){
+            finishAffinity(requireActivity())
 
-        finishAffinity(requireActivity())
+            exitProcess(1);
+        }
     }
 }
