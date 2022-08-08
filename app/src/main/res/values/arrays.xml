@@ -3,16 +3,16 @@
 
     <!-- Frequency Setting Spinner -->
     <string-array name="frequencyPreference">
+        <item>0.5 Hz</item>
+        <item>1 Hz</item>
+        <item>2 Hz</item>
         <item>5 Hz</item>
-        <item>10 Hz</item>
-        <item>15 Hz</item>
-        <item>20 Hz</item>
     </string-array>
     <string-array name="frequencyPreferenceValues">
+        <item>0.5</item>
+        <item>1</item>
+        <item>2</item>
         <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
     </string-array>
 
 </resources>

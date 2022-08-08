@@ -32,13 +32,13 @@
             app:iconSpaceReserved="false"/>
 
         <ListPreference
+            android:defaultValue="0.5"
             android:entries="@array/frequencyPreference"
             android:entryValues="@array/frequencyPreferenceValues"
-            android:defaultValue="60"
             android:key="frequency"
             android:summary="Select how often you would like to read from the Multimeter"
             android:title="Select Frequency"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <Preference

@@ -51,7 +51,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         frequency?.setOnPreferenceChangeListener { _, _ ->
             MainScope().launch {
                 //use a coroutine task to set rate after internal state changes
-                measurementViewModel.setRefreshRate(frequency.value.toInt())
+                measurementViewModel.setRefreshRate(frequency.value.toFloat())
             }
             true
         }
