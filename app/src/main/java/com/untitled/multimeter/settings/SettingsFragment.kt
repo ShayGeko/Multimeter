@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.*
+import com.untitled.multimeter.MainFragment
 import com.untitled.multimeter.R
 import com.untitled.multimeter.RealmViewModelFactory
 import kotlin.system.exitProcess

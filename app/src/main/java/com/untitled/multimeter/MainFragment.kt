@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.untitled.multimeter.connection.ConnectionFragment
 import com.untitled.multimeter.mesurement.MeasurementFragment
 import java.net.InetAddress

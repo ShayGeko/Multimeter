@@ -2,33 +2,26 @@ package com.untitled.multimeter.mesurement
 
 import android.app.AlertDialog
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.*
-import com.untitled.multimeter.R
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.untitled.multimeter.MainFragment
-import com.untitled.multimeter.MultimeterApp
+import com.untitled.multimeter.R
 import com.untitled.multimeter.RealmViewModelFactory
 import com.untitled.multimeter.connection.ConnectionFragment
-import com.untitled.multimeter.createexperiment.CreateExperimentViewModel
 import com.untitled.multimeter.data.model.*
 import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
-import com.untitled.multimeter.experiments.ExperimentsRecyclerViewAdapter
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.ObjectId
-import io.realm.kotlin.types.RealmList
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -119,6 +112,7 @@ class MeasurementFragment : Fragment() {
         addMeasurementButton.setOnClickListener {
             openAlertDialog(viewModel.arraylist)
         }
+
         return t
     }
 
@@ -221,7 +215,12 @@ class MeasurementFragment : Fragment() {
                                 throw error
                             }
                         }
-                    dialog.dismiss()
+                        dialog.dismiss()
+                        val refreshFrag: FragmentTransaction = requireFragmentManager().beginTransaction()
+                        if (Build.VERSION.SDK_INT >= 26) {
+                            refreshFrag.setReorderingAllowed(false)
+                        }
+                        refreshFrag.detach(this).attach(this).commit()
                     }
                 }
 
