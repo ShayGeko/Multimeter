@@ -12,7 +12,13 @@ import com.untitled.multimeter.data.source.UserRepository
 import io.realm.kotlin.Realm
 import io.realm.kotlin.internal.platform.ensureNeverFrozen
 import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.sync.SyncClientResetStrategy
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
+import io.realm.kotlin.mongodb.syncSession
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class MultimeterApp : Application() {
@@ -38,10 +44,13 @@ class MultimeterApp : Application() {
          * Returns an instance of realm for this app
          */
         fun getRealmInstance() : Realm{
-            if(this::mRealm.isInitialized){
+            Log.d(APPLICATION_TAG, "getRealmInstance called")
+            if(this::mRealm.isInitialized && !mRealm.isClosed()){
+                Log.d(APPLICATION_TAG, "Realm is already opened. Returning existing entity")
                 return mRealm
             }
             else{
+                Log.d(APPLICATION_TAG, "Opening new Realm")
                 val schema = setOf(
                     UserInfo::class,
                     Experiment::class,
@@ -51,9 +60,14 @@ class MultimeterApp : Application() {
                 )
                 val config = SyncConfiguration
                     .Builder(realmApp.currentUser!!, REALM_PARTITION, schema)
-                    .waitForInitialRemoteData(10.seconds)
                     .build()
                 mRealm = Realm.open(config)
+
+                Log.d(APPLICATION_TAG, mRealm.syncSession.state.name)
+                CoroutineScope(Dispatchers.IO).launch {
+                    async{mRealm.syncSession.uploadAllLocalChanges()}
+                    async {mRealm.syncSession.downloadAllServerChanges()}
+                }
 
                 return mRealm
             }

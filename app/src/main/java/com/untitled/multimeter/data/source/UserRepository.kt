@@ -14,28 +14,26 @@ import com.untitled.multimeter.data.source.realm.RealmObjectNotFoundException
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.User
-import io.realm.kotlin.notifications.InitialObject
-import io.realm.kotlin.notifications.SingleQueryChange
-import io.realm.kotlin.notifications.UpdatedObject
+import io.realm.kotlin.mongodb.syncSession
 import io.realm.kotlin.query.RealmQuery
+import io.realm.kotlin.query.find
 import io.realm.kotlin.types.ObjectId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Repository for users
  *
  */
 class UserRepository {
-    private lateinit var mRealm : Realm
+    private lateinit var mRealm: Realm
     private var isRealmOpen = false
 
     /**
@@ -47,8 +45,8 @@ class UserRepository {
      * LiveData of acquired User wrapped in Result class on success,
      * and error wrapped in Result otherwise
      */
-    fun login(email: String, password: String) : LiveData<Result<UserInfo>> {
-        val loginResult = MutableLiveData<Result<UserInfo>> ()
+    fun login(email: String, password: String): LiveData<Result<UserInfo>> {
+        val loginResult = MutableLiveData<Result<UserInfo>>()
         CoroutineScope(Dispatchers.IO).launch {
             // fancy try-catch block
             runCatching {
@@ -61,13 +59,13 @@ class UserRepository {
 
                 getCurrentUserInfoBlocking()
             } // if no exception was thrown, propagate the successful Result
-            .onSuccess { user : UserInfo ->
+                .onSuccess { user: UserInfo ->
                     loginResult.postValue(Result.success(user))
 
-            } // otherwise, propagate the failed result
-            .onFailure { exception : Throwable ->
-                loginResult.postValue(Result.failure(exception))
-            }
+                } // otherwise, propagate the failed result
+                .onFailure { exception: Throwable ->
+                    loginResult.postValue(Result.failure(exception))
+                }
         }
 
         return loginResult
@@ -80,8 +78,8 @@ class UserRepository {
      * @param password - password
      * @returns [LiveData] of [Result] with nothing inside on success, or with [Throwable] explaining what went wrong on failure
      */
-    fun register(account : CreateAccountModel) : LiveData<Result<Unit>> {
-        val registerResult = MutableLiveData<Result<Unit>> ()
+    fun register(account: CreateAccountModel): LiveData<Result<Unit>> {
+        val registerResult = MutableLiveData<Result<Unit>>()
         CoroutineScope(Dispatchers.IO).launch {
             // fancy try-catch block
             runCatching {
@@ -101,14 +99,23 @@ class UserRepository {
                     this._id = ObjectId.from(realmApp.currentUser!!.identity)
                     this.email = account.email
                     this.userName = account.username
+                    this.experiments = realmListOf()
                 }
-                addUserInfo(userInfo)
+
+                initRealm()
+                mRealm.syncSession.downloadAllServerChanges(1.seconds)
+                mRealm.writeBlocking {
+                    this.copyToRealm(userInfo)
+                    val managedUserInfo = query<UserInfo>("_id == $0", userInfo._id).first().find()!!
+
+                    Log.d(APPLICATION_TAG, "userinfo insertion success, username : ${managedUserInfo.userName}")
+                }
 
             } // if no exception was thrown, propagate the successful Result
                 .onSuccess {
                     registerResult.postValue(Result.success(Unit))
                 } // otherwise, propagate the failed result
-                .onFailure { exception : Throwable ->
+                .onFailure { exception: Throwable ->
                     registerResult.postValue(Result.failure(exception))
                 }
         }
@@ -130,7 +137,6 @@ class UserRepository {
 //    }
 
 
-
     /**
      * Attempts to add experiment to the user
      *
@@ -138,8 +144,8 @@ class UserRepository {
      * @returns
      * LiveData of the invitations for the user
      */
-    fun addExperimentToUser(experiment: Experiment): LiveData<Result<Boolean>>{
-        val result = MutableLiveData<Result<Boolean>> ()
+    fun addExperimentToUser(experiment: Experiment): LiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>>()
         CoroutineScope(Dispatchers.IO).launch {
             initRealm()
             runCatching {
@@ -148,20 +154,20 @@ class UserRepository {
                     //Get the current users entry
                     val userId = ObjectId.from(MultimeterApp.realmApp.currentUser!!.identity)
                     val userQuery: RealmQuery<UserInfo> = this.query<UserInfo>("_id == $0", userId)
-                    val userInfo = userQuery.find().first()
+                    val userInfo = userQuery.first().find()
 
                     //Add Experiments to the user
-                    userInfo.experiments.add(experiment._id)
+                    userInfo!!.experiments.add(experiment._id)
 
                     return@writeBlocking userInfo
                 }
             } // if no exception was thrown, propagate the successful Result
                 .onSuccess { userInfo ->
                     Log.d("UserRepository", "Experiment add succesful")
-                    Log.d("UserRepository", "new experiments: ${userInfo!!.experiments.toString()}")
+                    Log.d("UserRepository", "new experiments: ${userInfo.experiments.toString()}")
                     result.postValue(Result.success(true))
                 } // otherwise, propagate the failed result
-                .onFailure { exception : Throwable ->
+                .onFailure { exception: Throwable ->
                     Log.e("UserRepository", "Experiment add failed")
                     Log.e("UserRepository", exception.message.toString())
                     result.postValue(Result.failure(exception))
@@ -196,7 +202,7 @@ class UserRepository {
                 .onSuccess {
                     Log.d("removeExperimentFromUser", "Experiment removal succesful")
                 }
-                .onFailure { exception : Throwable ->
+                .onFailure { exception: Throwable ->
                     Log.e("removeExperimentFromUser", "Experiment removal failed")
                     Log.e("removeExperimentFromUser", exception.message.toString())
                 }
@@ -208,7 +214,7 @@ class UserRepository {
      *
      * @param objectId = ObjectId of the requested user
      */
-    fun getUserName(objectId: ObjectId) : LiveData<Result<String>>{
+    fun getUserName(objectId: ObjectId): LiveData<Result<String>> {
         val result = MutableLiveData<Result<String>>()
         CoroutineScope(Dispatchers.IO).launch {
             initRealm()
@@ -242,53 +248,20 @@ class UserRepository {
     }
 
     /**
-     * Stores [UserInfo] about just registered user to [Realm
-     * **Should only be called if the user is logged in**
-     *
-     * @return Observable [Result] of query for [UserInfo] for the currently logged in user
-     */
-    fun getUserInfo(): LiveData<Result<UserInfo>>{
-        val resultLiveData = MutableLiveData<Result<UserInfo>>()
-        CoroutineScope(Dispatchers.IO).launch {
-            // fancy try-catch
-            runCatching {
-                // get the configuration using current user, so that non-logged in user cannot write to the db
-                // use application-wise partition, and limit the visible scope only to userInfo
-                initRealm()
-
-                // get id of the logged in user
-                val userId = ObjectId.from(realmApp.currentUser!!.identity)
-
-                // find first userInfo matching user's id, throw an exception if none was found
-                return@runCatching mRealm
-                    .query<UserInfo>("_id == $0", userId)
-                    .first().find()
-                    ?: throw RealmObjectNotFoundException("UserInfo for the current user is not found!")
-            }// if no exception was thrown, propagate the successful Result
-                .onSuccess { userInfo ->
-                    resultLiveData.postValue(Result.success(userInfo))
-                } // otherwise, propagate the failed result
-                .onFailure { exception : Throwable ->
-                    resultLiveData.postValue(Result.failure(exception))
-                }
-        }
-
-        return resultLiveData
-    }
-
-    /**
      * **Should only be called if the user is logged in**
      *
      *  *Runs on the caller's thread/coroutine*
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
      */
-     fun getCurrentUserInfoBlocking() : UserInfo{
+     suspend fun getCurrentUserInfoBlocking() : UserInfo{
         initRealm()
 
         // find first userInfo matching user's id, throw an exception if none was found
 
         // get id of the logged in user
         val userId = ObjectId.from(realmApp.currentUser!!.identity)
+        mRealm.syncSession.downloadAllServerChanges(1.seconds)
+        Log.d(APPLICATION_TAG, "looking for userinfo for $userId")
         val result = mRealm
             .query<UserInfo>("_id == $0", userId)
             .first().find()
@@ -296,6 +269,7 @@ class UserRepository {
 
         return result
     }
+
     /**
      * **Should only be called if the user is logged in**
      *
@@ -308,11 +282,12 @@ class UserRepository {
      */
     suspend fun getUserInfoByEmailAsync(email : String) : UserInfo{
         initRealm()
-
+        mRealm.syncSession.downloadAllServerChanges(1.seconds)
         return mRealm
             .query<UserInfo>("email == $0", email)
-            .first().asFlow().single().obj!!
+            .first().find() ?: throw RealmObjectNotFoundException("User info not found for $email")
     }
+
     /**
      * **Should only be called if the user is logged in**
      *
@@ -322,7 +297,7 @@ class UserRepository {
      *  @param email email to match
      * @return Observable [Result] of query for [UserInfo] for the found  user
      */
-    fun getUserInfoByEmail(email : String) : LiveData<Result<UserInfo>>{
+    fun getUserInfoByEmail(email: String): LiveData<Result<UserInfo>> {
         val liveData = MutableLiveData<Result<UserInfo>>()
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -346,18 +321,20 @@ class UserRepository {
      *
      * @return Observable [Result] of query for [UserInfo] for the currently logged in user
      */
-    suspend fun getCurrentUserInfoAsync() : UserInfo {
+    suspend fun getCurrentUserInfoAsync(): UserInfo {
         initRealm()
 
         val id = ObjectId.from(realmApp.currentUser!!.identity)
 
-        return mRealm.query<UserInfo>("_id == $0", id).first().asFlow().single().obj!!
+        mRealm.syncSession.downloadAllServerChanges(1.seconds)
+        return mRealm.query<UserInfo>("_id == $0", id)
+            .first().find() ?: throw RealmObjectNotFoundException("User not found for $id")
     }
 
-    suspend fun addOrUpdateDeviceToken(userInfo : UserInfo, token : String){
+    suspend fun addOrUpdateDeviceToken(userInfo: UserInfo, token: String) {
         initRealm()
 
-        mRealm.write{
+        mRealm.write {
             val latestUserInfo = findLatest(userInfo)
             copyToRealm(latestUserInfo!!.apply { deviceToken = token })
         }
@@ -367,12 +344,12 @@ class UserRepository {
      * Removes device registration token from current user
      * Does nothing if the user is not logged in
      */
-    suspend fun removeDeviceRegistrationTokenFromCurrentUser(){
+    suspend fun removeDeviceRegistrationTokenFromCurrentUser() {
         initRealm()
 
         val user = realmApp.currentUser
 
-        if(user!= null && user.loggedIn){
+        if (user != null && user.loggedIn) {
             val id = ObjectId.from(user.identity)
             mRealm.write {
                 val userInfo = this.query<UserInfo>("_id == $0", id).first().find()
@@ -381,16 +358,23 @@ class UserRepository {
             }
         }
     }
+
     /**
      * Stores [UserInfo] about just registered user to [Realm]
      *
      * @param userInfo information about user to store
      * @return [Result] with inserted [UserInfo] on success or [Result] with [Throwable] explaining what went wrong on failure
      */
-    private fun addUserInfo(userInfo: UserInfo){
+    private fun addUserInfo(userInfo: UserInfo) {
         initRealm()
 
-        mRealm.writeBlocking { this.copyToRealm(userInfo)}
+        Log.d(APPLICATION_TAG, "adding userinfo for ${userInfo._id}")
+        mRealm.writeBlocking {
+            this.copyToRealm(userInfo)
+            val managedUserInfo = query<UserInfo>("_id == $0", userInfo._id).first().find()!!
+
+            Log.d(APPLICATION_TAG, "userinfo insertion success, username : ${managedUserInfo.userName}")
+        }
     }
 
     private fun initRealm(){
@@ -424,7 +408,7 @@ class UserRepository {
                 .onSuccess {
                     Log.d("updateUsername", "Username Update Success")
                 }
-                .onFailure { exception : Throwable ->
+                .onFailure { exception: Throwable ->
                     Log.e("updateUsername", "Username Update Failed")
                     Log.e("updateUsername", exception.message.toString())
                 }
@@ -455,7 +439,7 @@ class UserRepository {
                 .onSuccess {
                     Log.d("updateEmail", "Email Update Success")
                 }
-                .onFailure { exception : Throwable ->
+                .onFailure { exception: Throwable ->
                     Log.e("updateEmail", "Email Update Failed")
                     Log.e("updateEmail", exception.message.toString())
                 }

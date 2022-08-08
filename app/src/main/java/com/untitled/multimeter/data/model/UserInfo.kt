@@ -1,6 +1,7 @@
 package com.untitled.multimeter.data.model
 
 import com.untitled.multimeter.MultimeterApp
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -16,6 +17,6 @@ class UserInfo() : RealmObject {
     var _partition : String = MultimeterApp.REALM_PARTITION
     var userName : String = ""
     var email : String = ""
-    var experiments : RealmList<ObjectId> = RealmListObjectId(ArrayList<ObjectId>())
+    var experiments : RealmList<ObjectId> = realmListOf()
     var deviceToken : String? = null
 }
