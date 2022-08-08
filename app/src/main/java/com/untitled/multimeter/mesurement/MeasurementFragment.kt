@@ -119,6 +119,7 @@ class MeasurementFragment : Fragment() {
         addMeasurementButton.setOnClickListener {
             openAlertDialog(viewModel.arraylist)
         }
+
         return t
     }
 
