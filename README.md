@@ -39,8 +39,8 @@
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/Threaded%20Design%20Diagram.drawio.png)
 
 ### Work distribution:
-<img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown.PNG?raw=true" class="img-responsive" alt="">
-[view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown.PNG)
+<img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown1.PNG?raw=true" class="img-responsive" alt="">
+[view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown1.PNG)
 
 ### .apk file
 [download.apk file](https://github.com/ShayGeko/Multimeter/releases/download/final_presentation/final_presentation.apk)
