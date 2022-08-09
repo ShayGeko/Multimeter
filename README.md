@@ -47,3 +47,14 @@
 
 ### code 
 [download .zip file](https://github.com/ShayGeko/Multimeter/archive/refs/tags/final_project.zip)
+
+### Appendix
+Background Images
+- https://en.freejpg.com.ar/istocksim/887448456?s=1
+- https://www.altair.com/electronics
+
+
+Icons
+- https://www.iconfinder.com/icons/211122/android_smart_phone_icon
+- https://www.123rf.com/photo_180200100_digital-multimeter-line-icon-tester-measuring-instrument-in-simple-style-isolated-on-white-backgroun.html?vti=o3kwoy8ryriqoce3j9-1-65
+- https://www.freepik.com/premium-vector/multimeter-icons-set_6609936.htm#page=3&query=multimeter%20icon&position=6&from_view=keyword 
