@@ -27,6 +27,9 @@
 # Show and tell 2
 <iframe width="560" height="315" src="https://www.youtube.com/embed/sUl5N5CSdTk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+# Final presentation
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ftLWlb9vU9A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ### MVVM diagram:
 <img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png?raw=true" class="img-responsive" alt="">
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png)
@@ -35,5 +38,12 @@
 <img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/Threaded%20Design%20Diagram.drawio.png?raw=true" class="img-responsive" alt="">
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/Threaded%20Design%20Diagram.drawio.png)
 
+### Work distribution:
+<img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown.PNG?raw=true" class="img-responsive" alt="">
+[view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown.PNG)
+
 ### .apk file
-[download.apk file](https://github.com/ShayGeko/multimeter-githubpage/releases/download/show_and_tell_2_public/show_and_tell_2.apk)
+[download.apk file](https://github.com/ShayGeko/Multimeter/releases/download/final_presentation/final_presentation.apk)
+
+### code
+[download .zip file](https://github.com/ShayGeko/Multimeter/archive/refs/tags/final_presentation.zip)
