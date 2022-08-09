@@ -43,8 +43,7 @@
 [view image in better quality](https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/work_breakdown1.PNG)
 
 ### .apk file
-[download.apk file](https://github.com/ShayGeko/Multimeter/releases/download/final_presentation/final_presentation.apk)
+[download.apk file](https://github.com/ShayGeko/Multimeter/releases/download/final_project/final_presentation.apk)
 
 ### code 
-Note: for code to build, it needs google-service.json, which we are not providing for security reasons (as repo is public). The app can be tested using the .apk </br>
-[download .zip file](https://github.com/ShayGeko/Multimeter/archive/refs/tags/final_presentation.zip)
+[download .zip file](https://github.com/ShayGeko/Multimeter/archive/refs/tags/final_project.zip)
