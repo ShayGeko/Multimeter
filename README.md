@@ -45,5 +45,6 @@
 ### .apk file
 [download.apk file](https://github.com/ShayGeko/Multimeter/releases/download/final_presentation/final_presentation.apk)
 
-### code
+### code 
+Note: for code to build, it needs google-service.json, which we are not providing for security reasons (as repo is public). The app can be tested using the .apk </br>
 [download .zip file](https://github.com/ShayGeko/Multimeter/archive/refs/tags/final_presentation.zip)
