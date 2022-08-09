@@ -1,6 +1,6 @@
 # Multimeter - Project of team Untitled for CMPT 362
 
- Our github repo (private): [View repository](https://github.com/ShayGeko/Multimeter)
+ Our github repo (public): [View repository](https://github.com/ShayGeko/Multimeter)
 
 ### Contributors:
 - Heorhii Shramko
