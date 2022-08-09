@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "191543669973",
+    "project_id": "multimeter-3c1c6",
+    "storage_bucket": "multimeter-3c1c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191543669973:android:df20ed1933dcd7bffe9e5c",
+        "android_client_info": {
+          "package_name": "com.untitled.multimeter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "191543669973-j1p5c85fiebg0b3mdqr0as8cb55h2el8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.untitled.multimeter",
+            "certificate_hash": "11ffb8bf1e4902f9ac4b0b9f49b686d69e496bd3"
+          }
+        },
+        {
+          "client_id": "191543669973-2i93r37e9govmfb4g70hp7jiodragm94.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbRcy-YveMxUh6_-ZCCLxou9xvW2gqzg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191543669973-2i93r37e9govmfb4g70hp7jiodragm94.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
