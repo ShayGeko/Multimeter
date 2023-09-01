@@ -11,24 +11,18 @@
 
 
 ### Project pitch:
-<iframe
-        width="560"
-        height="315"
-        src="https://www.youtube.com/embed/sBuJernhIEs"
-        title="Project pitch"
-        frameborder="0"
-        allow="accelerometer;autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+[![Project Pitch](https://img.youtube.com/vi/sBuJernhIEs/0.jpg)](https://youtu.be/sBuJernhIEs "Project Pitch")
 
 # Show and tell 1
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KIK-r7LPmIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Video](https://img.youtube.com/vi/KIK-r7LPmIs/0.jpg)](https://youtu.be/KIK-r7LPmIs "SHow&Tell 1")
 
 # Show and tell 2
-<iframe width="560" height="315" src="https://www.youtube.com/embed/sUl5N5CSdTk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Video](https://img.youtube.com/vi/sUl5N5CSdTk/0.jpg)](https://www.youtube.com/watch?v=sUl5N5CSdTk "Show&Tell 2")
+
 
 # Final presentation
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ftLWlb9vU9A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Video](https://img.youtube.com/vi/ftLWlb9vU9A/0.jpg)](https://www.youtube.com/watch?v=ftLWlb9vU9A "Final presentation")
+
 
 ### MVVM diagram:
 <img src="https://github.com/ShayGeko/multimeter-githubpage/blob/gh-pages/MVVM.png?raw=true" class="img-responsive" alt="">
